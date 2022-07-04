@@ -1,0 +1,74 @@
+De directory 'illcdiss' bevat de ILLC Dissertation Style class file voor 
+gebruik met  Latex2e, files met de diverse logos, en een `guide' die dient 
+als handleiding  voor het gebruik van de files, en tevens als voorbeeld van 
+de Style en template voor de eigen dissertatie. Om de guide te krijgen, kan 
+je Latex toepassen op de file guide.tex, of je kan de file guidea5.ps.gz 
+downloaden, decomprimeren en afdrukken.
+
+De directory bevat tevens een oude versie van de ILLC Dissertation Style, 
+geschikt voor gebruik met Latex2.09.
+
+De files 'illcdiss.zip' is een Zip-Archive met de files van deze directory.
+
+De bijgeleverde guide is o.a. bedoeld als basis voor de eigen dissertatie, 
+waarbij de text van de hoofdstukken wordt ingevoegd met '\include'-opdrachten. 
+Je kan er ook voor kiezen om te beginnen met je eigen dissertatie en de 
+onderdelen uit de guide die je nodig hebt toe te voegen. Hou in dat geval
+rekening met de volgende specificaties voor ILLC Dissertations:
+ 
+  - een dubbelzijdige print met symmetrische marges
+  - elk hoofdstuk begint op een rechterpagina
+  - de paginakop bevat het paginanummer en of de hoofdstuktitel (voor 
+    linkerpagina's) of de sectietitel (voor rechterpagina's). De eerste pagina
+    van een hoofdstuk heeft alleen een paginanummer, in de voet. Lege pagina's
+    hebben geen kop, voet of paginanummer.
+  - aan het begin een 'franse pagina', de ILLC pagina, een titelpagina,
+    en dan een copyrightpagina
+ 
+Een gedetailleerd overzicht is te vinden in appendix A van de guide.
+
+Commentaar en vragen kunnen gestuurd worden naar
+   Marco Vervoort
+   M.R.Vervoort@uva.nl
+
+**************************************************************************
+
+The directory 'illcdiss' contains the ILLC Dissertation Style class file for 
+use with Latex2e, files containing the various logos, and a 'guide' that 
+serves as a usage manual for the files, as well as an example of the Style 
+and a template for your own dissertation. To obtain the guide, run Latex on 
+the file guide.tex, or download the file guidea5.ps.gz and decompress and 
+print it.
+
+The directory also contains an older version of the ILLC Dissertation Style, 
+suitable for use with Latex2.09.
+
+The files 'illcdiss.zip' is a Zip archive containing the files of this
+directory.
+
+The guide provided with the package is, amongst other things, meant to be 
+used as a basis for your own dissertation, using '\include'-commands to add 
+the text of the chapters. You may also choose to start with your own 
+dissertation files and add components of the guide as needed. In that case, 
+please consider the following specifications for ILLC Dissertations:
+ 
+  - doublesided printing with symmetrical margins
+  - each chapter starts on a right-hand page
+  - the pagehead contains the page number and either the chapter title (on 
+    lefthand pages) or the section title (on righthand pages). The first page 
+    of each chapter only has a page number, in the foot. Empty pages have 
+    neither foot, head nor page number.
+  - the first pages of the dissertation consist of a 'french page', the ILLC 
+    page, a title page and finally a copyright page.
+
+A detailed overview may be found in appendix A of the guide.
+
+'illcdiss-epsfig.cls' is an old version of illcdiss.cls that uses the
+epsfig package instead of the graphicx package, for old systems where
+the graphicx package is not available. This version is not suitable for
+use with 'pdflatex'.
+ 
+
+Comments and questions may be directed to
+   Marco Vervoort
+   M.R.Vervoort@uva.nl

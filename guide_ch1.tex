@@ -1,0 +1,156 @@
+\chapter{Getting started}
+
+This file describes the ILLC Dissertation Style package for
+typesetting dissertations in \LaTeX\ according to ILLC standards.
+It describes which files are needed, and how they should be adopted
+for your dissertation.
+It also serves as an example of using these files, and as a template
+for your own dissertation.
+
+The ILLC Dissertation Style file will change the
+layout of your dissertation to the required ILLC Dissertation Style.
+It defines a standard layout for the cover and spine of your dissertation,
+and includes a list of previous publications in the ILLC Dissertation series
+Furthermore, it redefines the layout of \verb|\chapter|, page heads,
+and theorem-like environments,
+and provides predefined theorem-like environments and
+commands for special sections such as \verb|\acknowledgements|.
+
+If you are already familiar with the standard {\tt book.cls} provided with
+\LaTeX 2$\epsilon$, then the ILLC Dissertation Style file should not give you
+any difficulties: you may use all {\tt book} style commands to prepare 
+your dissertation.
+For a description of the commands available in the \LaTeX 2$\epsilon$\ 
+{\tt book} style we refer you to the {\em \LaTeX{} User's Guide \& Reference
+Manual\/} by Leslie Lamport (1986, 1994), Addison-Wesley Publishing
+Company, Reading, Mass.
+
+\section{How to proceed}
+The complete ILLC Dissertation Style package contains the following files:
+\begin{description} 
+\item[{\tt illcdiss.cls}:] the ILLC Dissertation Style for
+use with \LaTeX 2$\epsilon$
+\item[{\tt illcdissertations.tex}:] file containing data on previous
+  ILLC Dissertations
+\item[{\tt illclogo.eps}:] this is the ILLC logo;
+  input by {\tt guide\_front.tex}
+\item[{\tt illc\_no\_text\_logo.eps}:] the ILLC logo without text;
+  input by {\tt guide\_spine.tex}
+\item[{\tt illclogo.pdf}, {\tt illc\_no\_text\_logo.pdf}:] PDF versions of the logos, used by {\tt pdflatex} instead of the EPS versions
+\item[{\tt guide.tex}:] the main latex file for this document
+\item[{\tt guide\_front.tex}:] file describing the official 
+  ILLC-Dissertation front matter
+\item[{\tt titlepage\_from\_pedel.pdf}:] placeholder for the title page which you will receive from the Bureau Pedel (Office of the Beadle)
+\item[{\tt guide\_XXX.tex}:] file containing the text of section XXX of this 
+document
+\item[{\tt guide\_spine.tex}:] file for preparing the text 
+  for the spine of your dissertation
+\end{description}
+You should make sure that \LaTeX\ is able to find the files
+{\tt illcdissertations.tex}, {\tt illcdiss.cls}, {\tt illclogo.eps} and
+{\tt illc\_no\_text\_logo.eps} when you 
+typeset your document with the ILLC Dissertation Style; one way
+to achieve this is to put all files in the ILLC Dissertation Style
+package in the directory (or folder) where your dissertation files
+reside.
+
+Note that the {\tt illcdissertations.tex}
+file in the archive is automatically updated for any new dissertations:
+please download the most recent version 
+before sending your dissertation to the printers.
+
+\section{Invoking the ILLC Dissertation Style}
+The ILLC Dissertation Style is invoked by replacing ``book'' by ``illcdiss''
+in the first line of your document. You should also \verb|\include| 
+a {\em personalized\/} version of the file {\tt guide\_front.tex} 
+after the \verb|\begin{document}| declaration. 
+You also need to \verb|\include| the file
+\verb|illcdissertations.tex| after the last page of your dissertation:
+
+\begin{verbatim}
+\documentclass{illcdiss}
+
+\begin{document}
+\pagestyle{plain}
+\pagenumbering{roman}
+
+%%  \include the `front matter'
+
+\include{guide_front}
+\include{guide_dedication}
+\tableofcontents
+\include{guide_acknowledgements}
+
+%%  now we can start with the real thing
+
+\cleardoublepage
+\pagestyle{headings}
+\pagenumbering{arabic}
+  
+    <your dissertation>
+
+%%  \include the `end matter'
+
+\include{guide_bib}
+\include{guide_index}
+\include{guide_symbols}
+\include{guide_samenvatting}
+\include{guide_abstract}
+\include{guide_curriculum}
+
+%%  finally, \include the list of previous ILLC dissertations
+
+\include{illcdissertations}
+
+\end{document}
+\end{verbatim}
+%
+%
+If your file is already coded with \LaTeX{} you can easily
+adapt it a posteriori to the ILLC Dissertation Style.
+
+If your document is coded with the ILLC Dissertation Style,
+you may not be able to typeset it using the standard \LaTeX\ book style
+without doing some minor recoding,
+as the ILLC Dissertation Style file defines some comands 
+that are not provided by the standard \LaTeX\ book style.
+
+Please refrain from using any \LaTeX{} or \TeX{} commands
+that affect the layout or formatting of your document
+(i.e.\ commands like \verb|\textheight|, \verb|\hoffset| etc.).
+The ILLC Dissertation Style has been carefully designed 
+to produce the rightlayout from your \LaTeX\ input.
+There may nevertheless be exceptional occasions on which to use some of them.
+If there is anything specific you would like to do 
+and for which neither \LaTeX{} nor the ILLC Dissertation Style file 
+provides a command,
+{\em please contact us\/} (email: illc@uva.nl).
+
+\section{Personalizing {\tt guide\_front.tex}}
+The file {\tt guide\_front.tex} contains all information needed 
+to produce the front matter of your dissertation according to ILLC standards.
+You need to personalize {\tt guide\_front.tex} by inserting your data
+at appropriate spots. Additionally, those that print on single-sided
+printers will want to eliminate the empty page printed after the cover page.
+All items that need to be personalized in 
+{\tt guide\_front.tex} can be found by searching for the string 
+``\%{}PERSONALIZE''.
+
+You will receive a version containing a title page from the Bureau Pedel (Office of the Beadle) once your dissertation has been approved by the committee.
+This should be included as pages (iii) and (iv) of the front matter, using the pdfpages \verb|\includepdf| command.
+An example file 'titlepage\_from\_pedel.pdf' is included with the style files.
+Note that you may wish to temporarily comment out the \verb|\includepdf| command for the version that is sent to your committee, as at that point you will not yet have obtained the proper title page and the example file will list the wrong title.
+
+The files {\tt guide\_dedication} and {\tt guide\_acknowledgements} 
+contain the optional dedication and acknowledgements, and are \verb|\include|d
+from the main file.
+You can personalize the text in these files, or simply change the name
+of the \verb|\include|d files in the main file.
+
+\section{Personalizing {\tt guide\_spine.tex}}
+The file {\tt guide\_spine.tex} contains all information needed
+to produce the spine of your dissertation according to ILLC standards.
+You need to personalize the file {\tt guide\_spine.tex} by inserting 
+your data at appropriate spots. All items that need to be personalized in
+{\tt guide\_spine.tex} can be found by searching for the string
+``\%{}PERSONALIZE''.
