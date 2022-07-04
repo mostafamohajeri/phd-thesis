@@ -21,6 +21,32 @@
 %\makeindex
 \usepackage[utf8]{inputenc}
 \usepackage{pdfpages}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{color}
+\usepackage{microtype} 
+\usepackage{hyperref}
+\usepackage{balance} % for balancing columns on the final page
+% \usepackage{flushend}
+\usepackage{listings}
+\usepackage{minted}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{minted}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{caption}
+\usepackage{array}
+\usepackage{fancyvrb}
+\usepackage{booktabs}
+\captionsetup{compatibility=false}
+\usepackage{subcaption}
+% \usemintedstyle{vs}
+%END SYNTAX HIGHLIGHT
+
+\newmintinline[asc]{text}{fontsize=\small}
+\usepackage{color}
+
 
 \typeout{ILLC Dissertation Example File `guide.tex' <July 21, 2001>.}
 
@@ -42,10 +68,10 @@
 \pagenumbering{arabic}
 
 \include{main_ch1_introduction}
-\include{main_ch2_asc}
-\include{main_ch3_preferences}
-\include{main_ch4_norms}
-\include{main_ch5_testing}
+\include{ch2/main_ch2_asc}
+\include{ch3/main_ch3_preferences}
+\include{ch4/main_ch4_norms}
+\include{ch5/main_ch5_testing}
 \include{main_conclusion}
 \appendix
 
