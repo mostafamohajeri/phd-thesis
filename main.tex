@@ -1,0 +1,69 @@
+%% This is an example using the illcdiss.cls.
+%%
+%% Author: Marco Vervoort
+%%
+%% Version: July 18, 2001.
+%%
+%%
+%%
+%%
+\documentclass{illcdiss}
+
+%If you use Latex2.09 instead of Latex2e, comment the \documentclass line
+%and uncomment one of the following lines (depending on whether you
+%also want to use MakeIndex)
+
+%\documentstyle[12pt,epsf]{illc_diss}
+%\documentstyle[12pt,makeidx,epsf]{illc_diss}
+
+%If you want to use MakeIndex, uncomment these lines
+%\usepackage{makeidx}     % only with Latex2e
+%\makeindex
+\usepackage[utf8]{inputenc}
+\usepackage{pdfpages}
+
+\typeout{ILLC Dissertation Example File `guide.tex' <July 21, 2001>.}
+
+\begin{document}
+\pagestyle{plain}
+\pagenumbering{roman}
+
+%%  \include the `front matter'
+
+\include{guide_front}
+\include{guide_dedication}
+\tableofcontents
+\include{guide_acknowledgements}
+
+%%  now we can start with the real thing
+
+\cleardoublepage
+\pagestyle{headings}
+\pagenumbering{arabic}
+
+\include{main_ch1_introduction}
+\include{main_ch2_asc}
+\include{main_ch3_preferences}
+\include{main_ch4_norms}
+\include{main_ch5_testing}
+\include{main_conclusion}
+\appendix
+
+\include{guide_appA}
+
+%%  \include the `end matter'
+
+%\bibliographystyle{plain}
+\include{guide_bib}
+\include{guide_index}
+\include{guide_symbols}
+\include{guide_samenvatting}
+\include{guide_abstract}
+\include{guide_curriculum}
+
+%%  finally, \include the list of previous ILLC dissertations
+
+\cleardoublepage % if you are so inclined
+\include{illcdissertations}
+
+\end{document}
