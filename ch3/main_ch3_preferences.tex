@@ -6,7 +6,8 @@ ability to select \textit{how-to} achieve their goals by choosing from a set of 
 
 \section{Introduction}
 % \Mos{It's not CP-Nets any more, mostly it's CP-Theories, need to change some text}
-As computational agents intervene more and more in human activities, there is an increasing demand for human-oriented forms of programming, i.e. relying on concepts and abstractions mapping intuitively to what humans utilize to explain and direct their behaviour. The \textit{belief-desire-intention} (BDI) model of agency \cite{Rao1995}, centred around a general theory of mind \cite{bratman1987intention}, offers one of those views, and has been studied by the community since the 90s, resulting in the proposal and development of several platforms for agent-based programming (e.g. AgentSpeak(L)/Jason \cite{RaoAS1996,Bordini2005}, 3APL/2APL \cite{Dastani2APL}, GOAL \cite{Hindriks2009a}, IMPACT \cite{IMPACT}, JACK \cite{JACK}, Astra \cite{ASTRA}, LightJason \cite{Aschermann2018}, ASC2 \cite{mohajeriparizi_2020_run}---a  systematic review of logic-based MAS frameworks can be found in \cite{MASReview2021}).
+
+%new_commnent As computational agents intervene more and more in human activities, there is an increasing demand for human-oriented forms of programming, i.e. relying on concepts and abstractions mapping intuitively to what humans utilize to explain and direct their behaviour. The \textit{belief-desire-intention} (BDI) model of agency \cite{Rao1995}, centred around a general theory of mind \cite{bratman1987intention}, offers one of those views, and has been studied by the community since the 90s, resulting in the proposal and development of several platforms for agent-based programming (e.g. AgentSpeak(L)/Jason \cite{RaoAS1996,Bordini2005}, 3APL/2APL \cite{Dastani2APL}, GOAL \cite{Hindriks2009a}, IMPACT \cite{IMPACT}, JACK \cite{JACK}, Astra \cite{ASTRA}, LightJason \cite{Aschermann2018}, ASC2 \cite{mohajeriparizi_2020_run}---a  systematic review of logic-based MAS frameworks can be found in \cite{MASReview2021}).
 
 Computational agents based on the BDI framework typically rely on abstract plans and plan refinement to reach a degree of autonomy in dynamic environments. In practice, relative autonomy in this context consists in the ability of an agent to select \textit{how-to} achieve their goals by choosing from a set of options. BDI agent scripts typically consist of hierarchical, partial, abstract plans. This contrasts with classic forms of planning, providing agents with fully-grounded policy, designed to reach a certain specific objective. 
 
@@ -17,7 +18,7 @@ This work focuses on a related, yet under-studied feature: % present in BDI fram
 The specification of abstract goals is a feature already present in some agent frameworks as those based on the AgentSpeak(L) language, albeit they rely on simplistic mechanisms for goal refinement. The present work aims to cover the goal refinement step (from abstract goals to concrete goals) as part of the agent's decision-making cycle. For doing so, 
 we present a preference-based approach to goal refinement. We start from defining preferences based on \textit{Ceteris Paribus} Networks (CP-Nets) \cite{Boutilier2004}---more precisely, in the extended form of \textit{Ceteris Paribus} Theories (CP-Theories) \cite{Wilson2004}---and we consider the established CP-Net logic and algorithms to guide the goal refinement of the agent. At implementation level, our target is an AgentSpeak(L)-like \cite{RaoAS1996} agent programming language. Since Jason \cite{Bordini2005},  AgentSpeak(L) programs are enriched with Prolog rules and facts for knowledge-level processing, occurring e.g. for testing context conditions during the plan selection phase. We present therefore an implementation of a preference-based goal refinement method that solely uses a Prolog-like inference engine of the agent's belief-base to reason about preferences, requiring only a minimal modification to the decision-making mechanisms hard-coded in the agent framework. To achieve this, a transformation method is proposed to map an extended version of CP-Nets and CP-Theories into Prolog facts and rules for the script of the AgentSpeak(L) agent, as well as a Prolog implementation of the algorithms necessary to reason with preferences.
 
-The paper proceeds as follows: section \ref{sec:2} provides a background about the concepts used in this work; section \ref{sec:method} presents the method and examples for preference-based abstract goal refinement in AgentSpeak(L) agents; section \ref{sec:implementation} describes a practical implementation of this method, and section \ref{sec:discuss} elaborates a discussion and conclusion over the proposed method. 
+The chapter proceeds as follows: section \ref{sec:2} provides a background about the concepts used in this work; section \ref{sec:method} presents the method and examples for preference-based abstract goal refinement in AgentSpeak(L) agents; section \ref{sec:implementation} describes a practical implementation of this method, and section \ref{sec:discuss} elaborates a discussion and conclusion over the proposed method. 
 
 % \begin{comment}
 
@@ -40,7 +41,7 @@ The paper proceeds as follows: section \ref{sec:2} provides a background about t
 %\Mos{we need to make a choice (later) to keep the related works here or move them to discussion. Some like GAI networks or other preference frameworks do not make much sense in discussion, but other BDI/Pref ones do for comparison} 
 % This section provides an overview of the concepts and methods on which our contribution builds upon. Most of these sections are succinct version of what presented in \cite{Mohajeri2019}.
 % \vspace{0pt} \noindent \textbf{BDI Agents} \quad
-\subsection{BDI Agents}
+\subsection{Abstract Plans in BDI Agents}
 
 Agents specified following the BDI paradigm are characterized by three mental attitudes. Beliefs are facts that the agent believes to be true. Desires capture the motivational dimension of the agent, typically conflated with the more concrete form of \textit{goals}, representing procedures/states that the agent wants to perform/achieve. Intentions are selected conducts (or \textit{plans}) that the agent commits to (in order to advance its desires). 
 
@@ -54,7 +55,7 @@ Since their origin \cite{Rao1995}, the essential feature associated to BDI archi
 %This explains why most current frameworks including Jason \cite{Bordini2005}, 2APL \cite{Dastani2007}, ASC2 \cite{mohajeriparizi_2020_run}, etc. are genuinely \textit{reactive}: the scripts are interpreted without the need for any additional introspection/deliberation steps. However, these frameworks also expose \textit{plan selection} functions that can be modified to implement alternative mechanism for goal-plan rule selection during the deliberation cycle which can be considered as a type of meta-programming over agent scripts. % As it was said before, this approach has the positive features of simplicity, readability and performance while having the issue that these order-based preferences stay in the mind of programmer, and are not represented as explicit preferential knowledge.
 % For more clarity, to better separate goal-adoption from the treatment of primitive actions, we will not consider primitive actions as part of preferences. 
 %[???] 
-%The latter option has been taken by almost all works adding explicit preferences to BDI agents \cite{Visser2011,Dasgupta2010,Nunes2014}: the selection of the most preferred alternative is taken as a \textit{reflective} process, where preferences provide a \textit{rationale} to be applied online during the agent's deliberation cycle.  The idea of relying on an offline step is instead proposed also in \cite{Mohajeri2019}, but they only focused on \textit{procedural preferences} (``I prefer to be doing $a_i$ rather than doing $a_j$"), which have a different level of abstraction w.r.t. to declarative preferences (``I prefer being in state $s_i$ rather than being in state $s_j$"). % This paper focused instead on \textit{declarative preferences}, i.e. about states of the world (``I prefer being in state $s_i$ rather than being in state $s_j$"). For this purpose, we used the notions of (1) \textit{declarative goals} (``want-to-be'' goals), and of (2) \textit{post-condition} or effect specification of \textit{primitive actions}. 
+%The latter option has been taken by almost all works adding explicit preferences to BDI agents \cite{Visser2011,Dasgupta2010,Nunes2014}: the selection of the most preferred alternative is taken as a \textit{reflective} process, where preferences provide a \textit{rationale} to be applied online during the agent's deliberation cycle.  The idea of relying on an offline step is instead proposed also in \cite{Mohajeri2019}, but they only focused on \textit{procedural preferences} (``I prefer to be doing $a_i$ rather than doing $a_j$"), which have a different level of abstraction w.r.t. to declarative preferences (``I prefer being in state $s_i$ rather than being in state $s_j$"). % This chapter focused instead on \textit{declarative preferences}, i.e. about states of the world (``I prefer being in state $s_i$ rather than being in state $s_j$"). For this purpose, we used the notions of (1) \textit{declarative goals} (``want-to-be'' goals), and of (2) \textit{post-condition} or effect specification of \textit{primitive actions}. 
 %Modifying the deliberation cycle by adding run-time reflective steps (as a complex preference checking and related plan selection algorithms) is generally detrimental to reactivity
 
 %$\paragraph{Reasoning cycle}
@@ -81,7 +82,7 @@ Although utility-based approaches bring clear computational advantages, they als
 This explains the existence of a family of \textit{qualitative} or hybrid solutions. % that allow for explicit specification of preferences. 
 The \textit{logical preference description} (LPD) language \cite{Brewka2004} uses ranked knowledge bases alongside preference strategies to present preference descriptions. The LPP language \cite{Bienvenu2006} is a first-order preference language defined in situation calculus to reason about conditional and qualitative preference.
 %Proposals exist for integrating LPP in BDI agents \cite{Visser2011}. 
-Other preference models, such as GAI networks \cite{Gonzales2004}, CP-Nets \cite{Boutilier2004} and qualitative preference systems (QPS) \cite{Visser2012QPS}, have been specifically introduced for taking into account dependencies and conditions between preferences. GAI networks build upon the assumption of \textit{generalized additive independence}, and in doing so they enable computing the utility contribution of every single attribute/subset of attributes. QPS offers a framework for representing multi-criteria preferences based on a lexicographic rule which combines basic preferences over variables, and a cardinality-based rule which counts criteria that are satisfie; QPS have been extended with goal-based preferences \cite{Visser2013QPS}, allowing to define preferences from the context of goals.
+Other preference models, such as GAI networks \cite{Gonzales2004}, CP-Nets \cite{Boutilier2004} and qualitative preference systems (QPS) \cite{Visser2012QPS}, have been specifically introduced for taking into account dependencies and conditions between preferences. GAI networks build upon the assumption of \textit{generalized additive independence}, and in doing so they enable computing the utility contribution of every single attribute/subset of attributes. QPS offers a framework for representing multi-criteria preferences based on a lexicographic rule which combines basic preferences over variables, and a cardinality-based rule which counts criteria that are satisfied; QPS have been extended with goal-based preferences \cite{Visser2013QPS}, allowing to define preferences from the context of goals.
 
 % Whereas CP-nets have weak constraints,  (they can be seen as the preferential counterpart of Bayesian networks). CP-nets and GAI-networks share possibility to be illustrated as intuitive graphical models. 
 In the present work, we decided to focus on CP-Nets, and their extension CP-Theories \cite{Wilson2004}, for two main reasons: they rely on weaker assumptions, and exhibit primarily a qualitative nature. 
@@ -124,30 +125,28 @@ they annotate primitive actions of agents with their expected effects, and this 
 %     \item Reasoning only happens inside agent's belief base / minimal extra machinery
 % \end{itemize}
 
-
 \subsection{AgentSpeak(L) Agents}
 \label{ssec:agentspeak}
-In terms of technical contribution, the present work targets frameworks that utilize AgentSpeak(L), one of the most commonly used BDI languages. 
+While this work mainly focuses on ASC2 as the BDI framework, the methods proposed in this chapter target any frameworks that utilize AgentSpeak(L). The main point of interest in BDI reasoning cycle for the preference reasoning approach proposed in this chapter is the plan instantiation process. This process, as it was briefly introduced in the previous section, starts when an event is selected for processing. Firstly the event is unified with the triggering events of the plans in the plan library. The ones that do unify are called relevant plans and the resulting unifier is called the relevant unifiers. Then, for each relevant plan, the relevant unifier is applied to its context condition and the result is queried against the belief base to create zero or more substitutions such that the context is a logical consequence of agent's current belief. The composition of relevant unifier with each substitution is called an \textit{applicable unifier}.  The following definitions apply:
 
-Based on the definitions proposed by Rao et al. in \cite{Rao1995,RaoAS1996}, an agent consists of a set of beliefs $B$ called belief base, a set of plans $P$ called plan library, a set of events $E$, a set of actions $A$, a set of intentions $I$, and three selection functions: $S_E$,$S_O$,$S_I$. When the agent receives an (internal or external) event or adopts a goal, it is added to $E$. The selection function $S_E$ selects an event to process from $E$. Then this event is unified with the triggering events in the heads of the plans in $P$. 
+
+% Based on the definitions proposed by Rao et al. in \cite{Rao1995,RaoAS1996}, an agent consists of a set of beliefs $B$ called belief base, a set of plans $P$ called plan library, a set of events $E$, a set of actions $A$, a set of intentions $I$, and three selection functions: $S_E$, that selects events for processing; $S_O$ selects one of applicable plans for instantiation, and, $S_I$ that select an intention. 
 
 \begin{definition}
 [Plan] A (reactive) plan is specified by $e : C \Rightarrow H$ where $e$ is a triggering event, $C$ is a formula capturing context conditions, and $H$ is a sequence of sub-goals or actions to be performed at the occurrence of the trigger event.
 \end{definition}
 
-The plans that their triggering event unifies with this event are called \textit{relevant plans} and their unifier is called the \textit{relevant unifier}. Then the relevant unifier is applied to the context condition and a substitution is created such that the context is a logical consequence of $B$. The composition of relevant unifier with this substitution is called an \textit{applicable unifier}. 
-
 \begin{definition}
-[Relevant plan] A plan in the form of $e : C \Rightarrow H$ is a \textit{relevant plan} with respect to an event $\epsilon$ iff there exists a most general unifier $\sigma$ such that $\epsilon\sigma = e\sigma$. Then, $\sigma$ is referred to as the relevant unifier for $\epsilon$.
+[Relevant plan] A plan in the form of $e : C \Rightarrow H$ is a \emph{relevant plan} with respect to an event $\epsilon$ iff there exists a most general unifier $\sigma$ such that $\epsilon\sigma = e\sigma$. Then, $\sigma$ is referred to as the \emph{relevant unifier} for $\epsilon$.
 \end{definition}
 
 \begin{definition}
-[Applicable plan] A plan in the form of $e : C \Rightarrow H$ is an \textit{applicable plan} with respect to an event $\epsilon$ iff there exists a relevant unifier $\sigma$ for $\epsilon$ and there exists a substitution $\delta$ such that $C\sigma\delta$
-is a logical consequence of belief base $B$. The composition $\sigma\delta$ is referred to as the applicable unifier for $\epsilon$ and $\delta$ is referred to as a \textit{correct answer substitution}.
+[Applicable plan] A plan in the form of $e : C \Rightarrow H$ is an \emph{applicable plan} with respect to an event $\epsilon$ iff there exists a relevant unifier $\sigma$ for $\epsilon$ and there exists a substitution $\delta$ such that $C\sigma\delta$
+is a logical consequence of belief base $B$. The composition $\sigma\delta$ is referred to as the \emph{applicable unifier} for $\epsilon$ and $\delta$ is referred to as a \emph{correct answer substitution}.
 \end{definition}
 
 
-As for each event there could be multiple applicable unifiers, the selection function $S_O$ chooses one of these plans or options and applying the applicable unifier to that plan creates an instantiated plan, i.e, an intended means or the event which will be added to a new or existing intention. Then the $S_I$ function selects an intention which will be executed. We will now consider an example agent to illustrate the plan instantiation process.
+%As for each event there could be multiple applicable unifiers, the selection function $S_O$ chooses one of these plans or options and applying the applicable unifier to that plan creates an instantiated plan, i.e, an intended means or the event which will be added to a new or existing intention. Then the $S_I$ function selects an intention which will be executed. We will now consider an example agent to illustrate the plan instantiation process.
 
 
 % As this work focuses on the goal refinement, the following formal definitions namely plans, relevant plans, and applicable plans are reiterated from \cite{RaoAS1996}. 
@@ -163,20 +162,27 @@ As for each event there could be multiple applicable unifiers, the selection fun
 %\noindent For the given definitions, only relevant plans may be applicable. 
 
 \subsubsection*{Example 1}
-Imagine an agent that, upon request can go to a restaurant and order a three course meal. The script for such agent is presented in Listing \ref{lst:script_1}.\footnote{In the excerpts we modified slightly the AgentSpeak(L) syntax, replacing ``\texttt{<-}'' with ``\texttt{=>}'', to further distinguish the reactive, forward nature of these rules w.r.t. the backward chaining derivation of Prolog rules ``\texttt{:-}''.} The agent has two plans for going to a restaurant and ordering a meal, the first plan (P1) is \textit{applicable} if the agent is not at a restaurant at the moment, which means a step of moving (\asc{.move_to} primitive action) is needed prior to ordering the meal, the second plan (P2) is applicable if the agent is already at the restaurant which means the agent will just adopt the goal of ordering the meal. There is also one plan for ordering the meal (P3) which is applicable if the agent has the belief that the meal it wants to order exists.
+Imagine again the domestic robot from the previous chapter, an agent that upon request, can go to a restaurant and order a three-course meal. This time the agent's plans and beliefs are expanded to give it more choice. The script for such agent is presented in Listing \ref{lst:script_1}.
+%\footnote{%In the excerpts we modified 
+%ASC2 slightly modifies the AgentSpeak(L) syntax, replacing ``\texttt{<-}'' with ``\texttt{=>}'', to further distinguish the reactive, forward nature of these rules w.r.t. the backward chaining derivation of Prolog rules ``\texttt{:-}''.} 
+The agent has two plans for going to a restaurant and ordering a meal: the first plan (P1) is \textit{applicable} if the agent is not at a restaurant at the moment, which means a step of moving (\asc{#move_to} primitive action) is needed prior to ordering the meal; the second plan (P2) is applicable if the agent is already at the restaurant which means the agent will just adopt the goal of ordering the meal. There is also one plan for ordering the meal (P3) which is applicable if the agent has the belief that the meal it wants to order exists.
 \begin{listing}[t]
 \centering
 \begin{minted}[fontsize=\small]{prolog}
-(P1) +!go_order(Loc,Meal) :
-        restaurant(Loc) & not at(Loc) =>
-        .move_to(Loc);
+
+% (P1) 
++!go_order(Loc,Meal) :
+    restaurant(Loc) & not at(Loc) =>
+        #move_to(Loc);
         !order(Meal).
-(P2) +!go_order(Loc,Meal) :
-        restaurant(Loc) & at(Loc) => 
+% (P2) 
++!go_order(Loc,Meal) :
+    restaurant(Loc) & at(Loc) => 
         !order(Meal). 
-(P3) +!order(meal(S,M,W)) : 
-        meal(S,M,W) => 
-        .ask_waiter(meal(S,M,W)).
+% (P3) 
++!order(meal(S,M,W)) : 
+    meal(S,M,W) => 
+        #ask_waiter(meal(S,M,W)).
 \end{minted}
     \caption{Reactive Plans of Food-ordering Agent}
     \label{lst:script_1}
@@ -193,15 +199,17 @@ Assuming that the belief base of the agent contains the beliefs \asc{restaurant(
 \begin{minted}[fontsize=\small]{prolog}
 +!go_order(french,meal(veg,meat,white)) :
     restaurant(french) & not at(french) =>
-    .move_to(french);
+    #move_to(french);
     !order(meal(veg,meat,white)).
 \end{minted}
+
 Note that in case the agent had more than one applicable unifiers, meaning it had more than one option to react to this goal, then the $S_O$ function would have been called to select one of the options. 
+
 
 \subsection{Abstract Events, Abstract Goals}
 Partial autonomy in dynamic environments is considered a core attribute of BDI agents, and this is in fact one of the reasons that separates plan refinement in BDI agents from classical planning approaches \cite{DeSilva2004}. While the idea of choosing between distinct plans to achieve a certain goal---typically referred to as plan selection---has been investigated by the community as the principal point of autonomous choice in BDI agents, there is indeed another important type of autonomy embedded in BDI agents: abstract events. While the previous example only exhibited fully grounded events, BDI agents, in particular those derived from  AgentSpeak(L)  \cite{Rao1995,RaoAS1996} 
 %and by extension  available in  \cite{}, 
-can indeed handle abstract events, referring to situations where an event contains unbounded variables and these variables can be grounded by different means such as context conditions of plans or test goals at any level in the plan refinement of the event. It can be argued that if plan selection promotes autonomy in the \textit{how-to-do} dimension of the agent, abstract events, including the invocation of abstract goals, promote autonomy in selecting (concretely) \textit{what-to-do} with it.
+can indeed handle abstract events, referring to situations where an event contains unbounded variables and these variables can be grounded by different means such as context conditions of plans or test goals at any level in the plan refinement of the event. It can be argued that if plan selection promotes autonomy in the \textit{how-to} dimension of the agent, abstract events, including the invocation of abstract goals, promote autonomy in selecting (concretely) \textit{what-to} with it.
 
 \subsubsection*{Example 2}
 Consider the same agent presented in listing \ref{lst:script_1}. This time we assume the agent has more information about the environment: it has beliefs about two types of soups, two types of main course, two types of wine, two restaurants, also it believes that it is standing already in one of the restaurants (the \texttt{french} one), and finally it has an inferential rule for which all possible triple of soup, main course and wine form  a meal combination. Those beliefs are presented as in listing~\ref{lst:beliefs_1}.
@@ -304,7 +312,7 @@ The next example further explores these type of preferences, and is an extended 
 
 
 %Secondly, CP-Nets focus attention on single-stage decision problems with complete information, ignoring any issues that arise in multi-stage, sequential decision analysis and any considerations of risk that arise in the context of uncertainty \cite{Boutilier2004}. These limitations are mainly because CP-Nets require every possible value of each variable to be known prior to decision-making and also, a CP-Net needs to decide a value for each variable in the process of decision-making. These issues, are a detrimental contrast from BDI agents that are designed to act in dynamic environments with incomplete information and uncertainty, and more often than not, a BDI agent deals with these issues via multi-stage decision making and dynamic reactions to the environment such as incremental plan and goal refinement and even failure handling.
-%  Furthermore, as the main point of this paper, a BDI agent with partially grounded goals, does not need to decide on every variable of a variable set in their decision and some variables may stay unbounded.
+%  Furthermore, as the main point of this chapter, a BDI agent with partially grounded goals, does not need to decide on every variable of a variable set in their decision and some variables may stay unbounded.
 %  unlike many other works on integrating preferences into BDI agents \cite{Visser2011,Visser2016,Mohajeri2019,Mohajeri2019Prefs}, this work does not assume that all the possible values for variables are known at any point in agent's life-cycle
 
 %The third core difference between CP-Nets and BDI agents, or more precisely agents that utilize Prolog-like reasoning concerns the algorithms used for finding decisions. The variables of a 
@@ -402,7 +410,7 @@ Surprisingly, with this definition, finding the most preferred unifier is simple
 
 
 %With this approach, %the normal plan selection can continue w.r.t. the re-ordered list of unifiers, but now, 
-%the plan selection function can take into account the ordering between unifiers. Through the rest of the paper, f
+%the plan selection function can take into account the ordering between unifiers. Through the rest of the chapter, f
 For simplicity, it is assumed that the agent uses the plan selection function typical in BDI frameworks, i.e. selecting the first applicable unifier for each event. This assumption means that the agent always uses an \textit{undominated} or \textit{most preferred} unifier to ground the variables of a (partially) abstract goal if this unifier exists, or reverts to the default behavior of selecting the first applicable unifier in case of inconsistencies with preferences that may result in situations that no unifier is the most preferred.
 %Note that the event does not need to be fully grounded and it may be that the unifier $\sigma$ keeps some of the variables unbounded or even introduce new variables. As this unifier 
 
@@ -474,13 +482,17 @@ As this is a normal Prolog rule, it can be simply added to the belief base of th
 \subsubsection*{Optimality}
 Next, the algorithm should be implemented for finding an optimal outcome, that is, the most preferred unifier(s) for a partially abstract term. The algorithms originally introduced for CP-Nets and CP-Theories generate an optimal outcome by \textit{sweeping} through the network from top to bottom (i.e., from ancestors to descendants) setting each variable to its most preferred value given the instantiation of its parents. While these algorithms are efficient and intuitive, they are not applicable for the transformed Prolog-like rules. Unlike CP-Nets and CP-Theories, the preferential structure of an agent is not static because of the presence of extra-contextual conditions; also, with the new form of statements, the parent-child relation of the variables is not explicit anymore. For these reasons, new algorithms are needed that do not rely on the hierarchy of the variables but instead utilize the backtracking feature of Prolog. 
 
-Looking at the definition \ref{def:mpu}, given a set of preference statements as Prolog rules in a belief base $B$, to prove that a unifier $(\sigma\delta)$ is the most preferred unifier for a partially unbound term (or event) $\epsilon$, it is sufficient to prove that for every other unifier $(\sigma\delta)'$ of that term, the relation $\epsilon(\sigma\delta)' \succ \epsilon(\sigma\delta)$ is not a logical consequence of $B$. Intuitively with the semantics of Prolog, this means that this relation could not be concluded from any of the preference statements of $B$. With this, a simple algorithm that can find the most preferred (or undominated) unifier(s) for a partially unbound term is a backtracking search that goes through every possible (partial) grounding of that term to find one where there is no other (partial) grounding of that term which is more preferred to it. Such algorithm can be implemented by adding this Prolog rule to the agent's belief base: 
+Looking at the definition \ref{def:mpu}, given a set of preference statements as Prolog rules in a belief base $B$, to prove that a unifier $(\sigma\delta)$ is the most preferred unifier for a partially unbound term (or event) $\epsilon$, it is sufficient to prove that for every other unifier $(\sigma\delta)'$ of that term, the relation $\epsilon(\sigma\delta)' \succ \epsilon(\sigma\delta)$ is not a logical consequence of $B$. Intuitively with the semantics of Prolog, this means that this relation could not be concluded from any of the preference statements of $B$. With this, a simple algorithm that can find the most preferred (or undominated) unifier(s) for a partially unbound term is a backtracking search that goes through every possible (partial) grounding of that term to find one where there is no other (partial) grounding of that term which is more preferred to it. Such algorithm can be implemented by adding the Prolog rule presented in Listing~\ref{lst:pref_alg} to the agent's belief base. The \asc{copy_term/2} is a standard predicate in many Prolog implementations that unifies \asc{G2} with a copy of \asc{G} in which all variables are replaced by new variables. 
+\begin{listing}[!ht]
 \begin{minted}[fontsize=\small]{prolog}
 most_preferred(G) :- 
-    copy_term(G, G2), T, 
+    copy_term(G, G2), G, 
     forall((G2, (G2 >> G) -> fail; true)).
 \end{minted}
-The \asc{copy_term/2} is a standard predicate in many Prolog implementations that unifies \asc{G2} with a copy of \asc{G} in which all variables are replaced by new variables. 
+\caption{CP-Net reasoning algorithm implemented in Prolog}
+\label{lst:pref_alg}
+\end{listing}
+
 % have been replaced by brand new variables, and all mutables by brand new mutables''. 
 When this rule is queried with a partially unbound term \asc{G}, first a copy of \asc{G} is created as \asc{G2}, then the term \asc{G} itself is called, starting a backtracking search over all possible groundings of \asc{G}, and then \asc{forall/2} predicate starts a nested loop over all groundings of \asc{G2} and fails if it can find a grounding of \asc{G2} that \asc{(G2 >> G)}, otherwise if no such \asc{G2} is found it returns true meaning the current grounding of \asc{G} is the most preferred one. Also with how prolog queries work, if there is more than one most preferred (undominated) grounding, asking for more answers will return them.
 
@@ -516,7 +528,7 @@ The core of the method is the rule for the predicate \asc{most_preferred/1}, and
 
 \section{Discussion and conclusion}
 \label{sec:discuss}
-This paper contributes to recent efforts to integrate preferences into BDI agents. Despite the `D' in the acronym, desires play a limited role in contemporary BDI agent platforms, as they are generally conflated to goals (procedural or declarative). This paper showed that by interacting adequately with the belief base and plan library of the agent, abstract goals can be refined taking into considerations the agent's preferences. Stated differently, preferences act here as background desires modifying/impacting goals, playing the role in turn of contingent desires. (Note that in general the literature suggests that preferences are
+This chapter contributes to recent efforts to integrate preferences into BDI agents. Despite the `D' in the acronym, desires play a limited role in contemporary BDI agent platforms, as they are generally conflated to goals (procedural or declarative). This chapter showed that by interacting adequately with the belief base and plan library of the agent, abstract goals can be refined taking into considerations the agent's preferences. Stated differently, preferences act here as background desires modifying/impacting goals, playing the role in turn of contingent desires. (Note that in general the literature suggests that preferences are
 derived from desires \cite{Lorini2017}; for our purposes, however, we discovered that the two can be seen as filling the same functional niche.) 
 
 Although this work illustrated the use of preferences focusing on a single agent and on goal refinement, preference statements can be relevant in other contexts too. For instance, MAS frameworks allow agents to communicate and transmit their beliefs to each other. Leveraging the present proposal, because preference statements are implemented as beliefs, agents can directly communicate their preferences to other agents. This can be very useful e.g. in social simulation or social learning contexts, where the agents may need to decide to act (or not to act) depending on both their own and other agents' preferences. Another interesting use-case for this approach could be the implementation of normative agents, utilizing preference both to capture personal and societal norms (see the use of CP-nets for deontic logic in \cite{Sartor2020}).

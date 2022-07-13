@@ -1,15 +1,8 @@
 
 
 
-
-
-
-
-
-
-
 \chapter{Developing a Suitable MAS Framework: ASC2}
-Agent-based modelling is a valuable tool in designing complex socio-technical systems. The chapter introduces an Agent-Oriented Programming (AOP) framework based on the Belief-Desire-Intention (BDI) model of agency. There are multiple BDI frameworks alrealy introduced in the literature. Prior to development of ASC2, we tried to adapt and utilize multiple of these frameworks, while there were different advantages and disadvantages to each of them, in the end, the main reason that resulted in designing and developing yet another framework was firstly interoperability and and secondly maintainability. None of these framework allowed for seamless interoperability between agents and other mainstream software. Also, subjectively viewed, these frameworks had at least most of the agent's reasoning hard-coded into them which is a detrimental to experimentation on alternate theories of an agents behavior. By getting inspiarations from the design of previous works, the novelty of this framework is in relying on the Actor model, instantiating each intentional agent as an autonomous micro-system run by actors. The hypothesis behind this choice is that defining the agents via actors results in a more fine-grained modular architecture that is more modifiable and that the execution of agent-oriented programs is enhanced (in scalability as well as in performance) by relying on robust implementations of Actor models such as \textit{Akka}.
+Agent-based modelling is a valuable tool in designing complex socio-technical systems. The chapter introduces an Agent-Oriented Programming (AOP) framework based on the Belief-Desire-Intention (BDI) model of agency. There are multiple BDI frameworks already introduced in the literature. Prior to development of ASC2, we tried to adapt and utilize multiple of these frameworks, while there were different advantages and disadvantages to each of them, in the end, the main reason that resulted in designing and developing yet another framework was firstly interoperability and and secondly maintainability. None of these framework allowed for seamless interoperability between agents and other mainstream software. Also, these frameworks had most of the agent's reasoning hard-coded into them which is detrimental to experimentation on alternate theories of an agents behavior. By getting inspirations from the design of previous works, the novelty of this framework is in relying on the Actor model, instantiating each intentional agent as an autonomous micro-system run by actors. The hypothesis behind this choice is that defining the agents via actors results in a more fine-grained modular architecture that is more modifiable and that the execution of agent-oriented programs is enhanced (in scalability as well as in performance) by relying on robust implementations of Actor models such as \textit{Akka}.
 
 
 \section{Introduction}
@@ -19,13 +12,14 @@ Agent-based models have an intuitive mapping to behavioural descriptions, and fo
 % ASC2 is a higher-level logic-based DSL for specifying scripts for intentional agents, i.e. sets of behavioural responses to environment conditions that are expected to achieve certain purposes. The standard approach to these type of languages is to use them by means of an interpreter. This work reports on a experiment to approach the via a trans-compilation tool, i.e. translating such higher-level DSL to a lower-level executable language (in this case Scala) that can be then compiled and executed.
 
 
-This paper introduces ASC2, a logic-based AOP framework in which agents are modular micro-systems run by actors. To evaluate the feasibility of this approach for future developments, a first implementation of ASC2 based on Akka runnig on JVM is compared with three other relevant AOP frameworks (Jason \cite{Bordini2005}, ASTRA \cite{Astra} and Sarl \cite{Astra}) by means of 3 benchmarks (token ring, chameneos redux and service point), known to capture relevant patterns in concurrent applications. This performance evaluation shows that despite its relative youth and the new implementation approach, ASC2 is competitive against existing frameworks, making it worthy of further investigation.
+This chapter introduces ASC2, a logic-based AOP framework in which agents are modular micro-systems run by actors. To evaluate the feasibility of this approach for future developments, a first implementation of ASC2 based on Akka runnig on JVM is compared with three other relevant AOP frameworks (Jason \cite{Bordini2005}, ASTRA \cite{Astra} and Sarl \cite{Astra}) by means of 3 benchmarks (token ring, chameneos redux and service point), known to capture relevant patterns in concurrent applications. This performance evaluation shows that despite its relative youth and the new implementation approach, ASC2 is competitive against existing frameworks, making it worthy of further investigation.
 % The initial performance evaluation shows that despite its relative youth and new implementation approach, ASC2 is competitive against existing frameworks, making it worthy of further investigation.
 
-The paper proceeds as follows: Section 2 provides some background on relevant concepts and related works. Section 3 presents the ASC2 framework. Section 4 reports on the empirical experiments comparing ASC2 with other frameworks. Section 5 compares the frameworks qualitatively. A note of future developments ends the paper.
+The chapter proceeds as follows: Section~\ref{sec:agere:background} provides some background on relevant concepts and related works. Section~\ref{sec:agere:method} presents the ASC2 framework. Section~\ref{sec:agere:evaluation} reports on the empirical experiments comparing ASC2 with other frameworks. Section~\ref{sec:agere:discuss} compares the frameworks qualitatively. A note of future developments ends the chapter.
 
 
 \section{Background}
+\label{sec:agere:background}
 \subsection{Agent Oriented Programming}
 
 Agent-Oriented Programming (AOP) is a programming paradigm that uses mental attitudes to model autonomous computational agents. Introduced in 1993 by Shoham \cite{shoham1993agent}, it has attracted increasing attention ever since and is believed to provide an effective abstraction to approach complex software systems (e.g. \cite{Sarl}). In the beginning it was presented as a specific version of Object Oriented Programming (OOP): whereas object classes contain arbitrary components, agent types share the same types of mental states and of structural relationships/mechanisms involving those states. 
@@ -55,30 +49,243 @@ ASTRA \cite{Astra} is yet another framework inspired by AgentSpeak(L)/Jason and 
 
 % and that puts scalability amongst the requirements it aims to satisfy. 
 
-Although several AOP/BDI frameworks have been introduced in the recent years (all hinting to problems of scalability), there is a small amount of empirical data available about how they perform in comparison to each other. The most notable exception is  \cite{Cardoso2013}, in which multiple actor and agent frameworks (2APL \cite{Dastani2APL}, GOAL \cite{Hindriks2009a}, Jason and Akka) are benchmarked. Their results showed that Jason outperformed other BDI frameworks by far and scaled almost on par with Akka. However, at that time (2013), none of these newer frameworks had been introduced yet, and Akka had not the support it has today. Strangely enough, none of these new AOP frameworks has the Actor model at their foundation. The present paper aims to investigates part of this gap.
+Although several AOP/BDI frameworks have been introduced in the recent years (all hinting to problems of scalability), there is a small amount of empirical data available about how they perform in comparison to each other. The most notable exception is  \cite{Cardoso2013}, in which multiple actor and agent frameworks (2APL \cite{Dastani2APL}, GOAL \cite{Hindriks2009a}, Jason and Akka) are benchmarked. Their results showed that Jason outperformed other BDI frameworks by far and scaled almost on par with Akka. However, at that time (2013), none of these newer frameworks had been introduced yet, and Akka had not the support it has today. Strangely enough, none of these new AOP frameworks has the Actor model at their foundation. The present chapter aims to investigates part of this gap.
 
 
-\section{ASC2}
+\section{AgentScript Cross-Compiler (ASC2)}
 % In this section the ASC2 framework is introduced. 
 % At its core 
-The ASC2 framework consists of: (a) a logic-based Agent-Oriented Programming DSL; (b) an abstract execution architecture; (c) a translation method that generates executable models from models specified by the DSL; (d) tools that support the execution of models. We provide here a brief overview on these components.
+This section introduces ASC2, however, as this framework is central to this thesis, detailed descriptions of different parts related to specific concepts is presented in the respective sections. The ASC2 framework consists of: (a) a logic-based Agent-Oriented Programming DSL; (b) an abstract agent run-time architecture; (c) a translation method that generates executable models from models specified by the DSL; (d) tools that support the execution of models. We provide here a brief overview on these components.
 
 \subsection{ASC2 DSL}
 \label{section_dsl}
 
+The ASC2 DSL has a very close syntax to AgentSpeak(L) language and includes some of the extensions provided by Jason. The main components of the DSL are (1) initial beliefs, (2) initial goals, and (3) plan rules. Initial beliefs are a set of Prolog-like facts and inferential rules that are potentially non-grounded declarative rules (Prolog-like), used to infer beliefs from beliefs. Initial goals designate the first intentions to which the agent commits. These can be used as a way to initialize an agent in their environment, and maybe start interacting with other agents. 
 
-\textcolor{red}{Needs big expansion, including full grammar}. The ASC2 DSL has a very close syntax to AgentSpeak(L) language and includes some of the extensions provided by Jason. The main components of the DSL are (1) initial beliefs, (2) inferential rules, (3) initial goals, and (4) plan rules. The initial beliefs and goals express the mental state of the agent at the start of the execution. Initial beliefs are a set of Prolog-like facts, and the initial goals designate the first intentions to which the agent commits. Inferential rules are potentially non-grounded declarative rules (Prolog-like), used to infer beliefs from beliefs. Plan rules are potentially non-grounded reactive rules in the form $e : c \Rightarrow f$ that map different internal events (e.g, \textit{goal adoption}, \textit{belief-update}) or external events (e.g, \textit{message reception}, \textit{perception}) to a sequence of executable steps called the \textit{plan body} which the agent has to perform in response to the event. When a plan body $f$ is matched with an event $e$, it is said that $f$ is \textit{relevant} for $e$. Each plan also has a context condition $c$ which is a Prolog-like expression. When a plan $f$ is relevant for $e$ and also $c$ holds, it is said that the $f$ is \textit{applicable} for $c$. The steps of a plan body can include belief query, belief update, sub-goal adoption, primitive actions, variable assignment,  and control flow structures (loops and conditionals). % \textcolor{red}{how much more does this section need to expand?}
+Plan rules are potentially non-grounded reactive rules in the form $e : C \Rightarrow H$ that map different internal or external events $e$ (e.g, \textit{goal adoption}, \textit{belief-update}) to a sequence of executable steps $H$ called the \textit{plan body} which the agent will perform in response to the event. The steps of a plan body can include belief query, belief update, sub-goal adoption, primitive actions, variable assignment, and control flow structures (loops and conditionals). Each plan also has a context condition $C$ which is a Prolog-like expression that represents when that plan is applicable. The full grammar definition of ASC2's DSL is presented in Listing~\ref{listings:asc2grammar}.
+
+\begin{listing} 
+\begin{minted}[escapeinside=00,mathescape=true]{js}
+agent           0$\rightarrow$0 beliefs initial_goals plans
+beliefs         0$\rightarrow$0 (term '.')*
+initial_goals   0$\rightarrow$0 ('!' atomic_formula '.')*
+plans           0$\rightarrow$0 (plan '.')*
+plan            0$\rightarrow$0 ( '@' atomic_formula )*
+                trigger_event ( ':' context )
+                '=>' body_definition '.'
+trigger_event   0$\rightarrow$0 ( '+'|'-'|'+!'|'-!'|'+?' ) atomic_formula
+context         0$\rightarrow$0 term
+body_definition 0$\rightarrow$0 body_formula ( ';' body_formula )*
+body_formula    0$\rightarrow$0 ( '!'|'+'|'-' ) literal
+                |  loop
+                |  conditional
+                |  primitive_call
+                |  <VARIABLE> '=' term
+term            0$\rightarrow$0 <VARIABLE>
+                |  '(' term ')'
+                |  <INTEGER> | <FLOAT> | <STRING> | 'true' | 'false' 
+                |  <ATOM> '(' term_list ')'
+                |  term operator term
+                |  'not' term
+                |  '[' term_list ( '|' term )? ']'
+                |  <ATOM>
+                |  primitive_call
+atomic_formula  0$\rightarrow$0 <ATOM>
+                |  <ATOM> '(' term_list ')'
+literal         0$\rightarrow$0 <VARIABLE> 
+                |  atomic_formula               
+term_list       0$\rightarrow$0 term ( ',' term )*
+operator        0$\rightarrow$0 '**'|'*'|'/'|'mod'|'+'|'-'|'='
+                |'=='|'!=='|'!='|'<'|'<='|'>'|'>='|'is'|'>>'
+                |'^'|'&&'|'||'|':-'
+primitive_call  0$\rightarrow$0 '#' <ATOM> ( '.' <ATOM> )* '(' term_list? ')'
+loop            0$\rightarrow$0 'for' '(' <VARIABLE> 'in' term ')' 
+                '{' body_definition '}'
+conditional     0$\rightarrow$0 'if' '(' term ')' '{' body_definition '}'
+                ('else' 'if' '(' term ')' '{' body_definition '}')*
+                ('else' '{' body_definition '}')?
+\end{minted}
+\caption{AgentScript's DSL grammar defenition}
+\label{listings:asc2grammar}
+\end{listing}%\label{listings:asc2grammar}
+
+
+An example of an ASC2 DSL that shows part of the script for a domestic robot is presented in Listing~\ref{lst:domestic_robot}, where lines 2-4 are initial beliefs, line 6 is an inferential rule, line 9 is an initial goal and lines 12-15 define an example plan. This script is further expanded on in the next chapter.
+
+\begin{listing}[!h]
+\begin{minted}[fontsize=\small,linenos]{prolog}
+% initial beliefs and inferential rules
+main(fish). soup(veg). wine(white).
+restaurant(french).
+at(home).
+
+meal(S,M,W) :- soup(S), main(M), wine(W).
+
+% initial goals
+!go_order(french,meal(veg,meat,white)).
+
+% plans
+% P1
++!go_order(Loc,Meal) :
+        restaurant(Loc) && not at(Loc) =>
+        #move_to(Loc);
+        !order(Meal).
+...
+\end{minted}
+\caption{An example script of ASC2 DSL}
+\label{lst:domestic_robot}
+\end{listing}
+
+%  An example of initial goals for the domestic robot agent can be:
+% \begin{minted}[fontsize=\small]{prolog}
+
+% \end{minted}
+
+%  An example of a plan in the domestic robot agent that tells it to go a location and order a meal:
+% \begin{minted}[fontsize=\small]{prolog}
+% +!go_order(Loc,Meal) :
+%     restaurant(Loc) && not at(Loc) =>
+%         #move_to(Loc);
+%         !order(Meal).
+% \end{minted}
+
+% Note that this plan is applicable only if the location is believed by the agent to be a restaurant, and, the agent believes it is currently not at that location. The plan body has two steps, one is a primitive action \asc{#move_to(Loc)} which is a low level call to a function and the second one is adoption of a sub-goal \asc{!order(Meal)}.
+
+%When a plan body $f$ is matched with an event $e$, it is said that $f$ is \textit{relevant} for $e$. Each plan also has a context condition $c$ which is a Prolog-like expression. When a plan $f$ is relevant for $e$ and also $c$ holds, it is said that the $f$ is \textit{applicable} for $c$.  The grammar definition of ASC2's DSL is presented in Listing~\ref{listings:asc2grammar}. % \textcolor{red}{how much more does this section need to expand?}
+
+
+
+
+\subsection{ASC2 Run-time Architecture}
+\label{section_arch}
+ASC2 is primarily motivated by AgentSpeak(L)/Jason as a starting point, and in its default setting it is designed to have the (almost) the same functional architecture. However, from a structural perspective, ASC2 is novel in the sense that it utilizes actor model to instantiate agents as actor micro-system. Because of this, the run-time architecture of ASC2 agents can and should be inspected from both functional and structural perspectives. 
+
+\subsubsection*{ASC2 Functional Architecture}
+From a functional perspective, ASC2 agents (by default) conceptually follow a reasoning flow very close to the reasoning cycle defined by AgentSpeak(L)/Jason. An ASC2 agent consists of a set of beliefs $B$ called belief base, a set of plans $P$ called plan library, a set of events $E$, a set of intentions $I$, and three selection functions: $S_E$,$S_O$,$S_I$. When the agent receives an (internal or external) event or adopts a goal, it is added to $E$. The selection function $S_E$ selects an event to process from $E$.
+%. 
+
+% \begin{definition}
+% [Plan] A (reactive) plan is specified by $e : C \Rightarrow H$ where $e$ is a triggering event, $C$ is a formula capturing context conditions, and $H$ is a sequence of sub-goals or actions to be performed at the occurrence of the trigger event.
+% \end{definition}
+
+Then, this event is matched with the triggering events in the heads of the plans in $P$. The plans that their triggering event unifies with this event are called \textit{relevant plans} and their unifier is called the \textit{relevant unifier}. Then for each relevant plan, the relevant unifier is applied to the context condition of that plan, and by querying against $B$ a substitution is created such that the context is a logical consequence of $B$. The composition of relevant unifier with this substitution is called an \textit{applicable unifier}. 
+
+% \begin{definition}
+% [Relevant plan] A plan in the form of $e : C \Rightarrow H$ is a \textit{relevant plan} with respect to an event $\epsilon$ iff there exists a most general unifier $\sigma$ such that $\epsilon\sigma = e\sigma$. Then, $\sigma$ is referred to as the relevant unifier for $\epsilon$.
+% \end{definition}
+
+% \begin{definition}
+% [Applicable plan] A plan in the form of $e : C \Rightarrow H$ is an \textit{applicable plan} with respect to an event $\epsilon$ iff there exists a relevant unifier $\sigma$ for $\epsilon$ and there exists a substitution $\delta$ such that $C\sigma\delta$
+% is a logical consequence of belief base $B$. The composition $\sigma\delta$ is referred to as the applicable unifier for $\epsilon$ and $\delta$ is referred to as a \textit{correct answer substitution}.
+% \end{definition}
+
+
+As for each event there could be multiple applicable unifiers, the selection function $S_O$ chooses one of these plans or options and applying the applicable unifier to that plan creates an instantiated plan, i.e, an intended means for the event which will be added to a new or existing intention. Then the $S_I$ function selects an intention which will be executed. Figure~\ref{fig:asc2func} presents an overview of the functional architecture embedded in ASC2 agents.
 
 \begin{figure}[t!]
   \centering
-  \hspace{-5pt}
-  \includegraphics[width=0.75\linewidth]{ch2/arch3.png}
-  \caption{ASC2 execution architecture}
+  \includegraphics[width=0.70\linewidth]{ch2/asc2arch.drawio.png}
+  \caption{ASC2's functional architecture}
+  \label{fig:asc2func}
 \end{figure}
 
-\subsection{ASC2 Execution Architecture}
-\label{section_arch}
-In contrast to AgentSpeak(L)/Jason, the execution architecture of ASC2 agents is based on the Actor model. Each agent consists of multiple actors with different roles: (\romannumeral 1) an \textbf{Interface} actor, (\romannumeral 2) a \textbf{Belief Base} actor, (\romannumeral 3), an \textbf{Intention} \textbf{Pool} actor and (\romannumeral 4) $N \ge 1$ \textbf{Intention} actors. Each agent has also non-actor components: (1) a plan library, and (2) one or more belief bases.
+
+Taking the example script in Listing~\ref{lst:domestic_robot}, Suppose the agent receives and event in the form of: 
+\begin{minted}[fontsize=\small]{prolog}
+!go_order(french,meal(veg,meat,white))
+\end{minted}
+\noindent For this event, plan P1 is relevant with unifier:
+\begin{minted}[fontsize=\small]{prolog}
+{Loc/french, Meal/meal(veg,meat,white)}
+\end{minted}
+Then applying this unifier to the context condition of that plan will result in the expression:
+\begin{minted}[fontsize=\small]{prolog}
+restaurant(french) & not at(french)
+\end{minted}
+Which indeed is a logical consequence of the agents beliefs, meaning this plan is applicable with the same unifier as before (i.e., the query does not add any new substitutions). Then, by applying this substitution to the plan itself will result in:
+\begin{minted}[fontsize=\small]{prolog}
++!go_order(french,meal(veg,meat,white)) :
+    restaurant(french) & not at(french) =>
+    #move_to(french);
+    !order(meal(veg,meat,white)).
+\end{minted}
+
+The steps in the body of the instantiated plan become an intended means for the agent to execute. The first step \asc{#move_to(french)} is simply a function call. In ASC2, this could be any callable entity on the JVM's execution classpath. In this example we are assuming that this call somehow relocates agent to the location specified as the parameter. The second step is \asc{!order(meal(veg,meat,white))} which is a sub-goal. In functional terms a sub-goal is processed by the agent as an internal event that will follow the same plan selection process.
+
+This process is better described in ASC2 as a reasoning flow instead of a reasoning cycle. This is because unlike what is typically the case in BDI frameworks, ASC2 does not implement an explicit synchronous reasoning cycle. As a result the two selection functions $S_E$ and $S_I$ are asynchronous: when an event arrives, it will be processed in an asynchronous manner given there are free resources available to the agent. Or, when a new intent is created, it will be executed asynchronously given there are free resources available. In effect, the sets $E$ and $I$ are priority queues and $S_E$ and $S_I$ are sorting functions that define the priority of the entities in these queues. The default implementation for both is a simple first-in-first-out (FIFO) algorithm. A new event or an intention will be selected by their respective selection function when processing resources, namely threads from a thread pool become available.
+
+
+
+% As this work focuses on the goal refinement, the following formal definitions namely plans, relevant plans, and applicable plans are reiterated from \cite{RaoAS1996}. 
+
+
+
+
+
+% \Gio{[here we should write a bit about variables, constants, unification and unifiers.]}
+% \Mos{Giovanni can write this}
+
+
+%\noindent For the given definitions, only relevant plans may be applicable. 
+
+% \paragraph{Domestic Robot Agent}
+% To demonstrate the full functional plan instantiation process of our agent, imagine a domestic robot that upon request can go to a restaurant and order a three course meal. The script for such agent is presented in Listing \ref{lst:domestic_robot_1}. 
+% %\footnote{In the excerpts we modified slightly the AgentSpeak(L) syntax, replacing ``\texttt{<-}'' with ``\texttt{=>}'', to further distinguish the reactive, forward nature of these rules w.r.t. the backward chaining derivation of Prolog rules ``\texttt{:-}''.} 
+% The agent has two plans for going to a restaurant and ordering a meal, the first plan (P1) is \textit{applicable} if the agent is not at a restaurant at the moment, which means a step of moving (\asc{#move_to} primitive action) is needed prior to ordering the meal, the second plan (P2) is applicable if the agent is already at the restaurant which means the agent will just adopt the goal of ordering the meal. There is also one plan for ordering the meal (P3) which is applicable if the agent has the belief that the meal it wants to order exists.
+
+% \begin{listing}[t]
+% \centering
+% \begin{minted}[fontsize=\small]{prolog}
+% % initial beliefs
+% main(fish). main(meat). soup(veg). soup(fish).
+% wine(white). wine(red).
+% restaurant(french). restaurant(italian).
+% at(home).
+% % inferential rules
+% meal(S,M,W) :- soup(S), main(M), wine(W).
+
+% % plans
+% % P1
+% +!go_order(Loc,Meal) :
+%         restaurant(Loc) && not at(Loc) =>
+%         #move_to(Loc);
+%         !order(Meal).
+% % P2
+% +!go_order(Loc,Meal) :
+%         restaurant(Loc) && at(Loc) => 
+%         !order(Meal). 
+% % P3
+% +!order(meal(S,M,W)) : 
+%         meal(S,M,W) => 
+%         #ask_waiter(meal(S,M,W)).
+% \end{minted}
+%     \caption{Domestic robot agent's script}
+%     \label{lst:domestic_robot_1}
+% \end{listing}%
+% \noindent Suppose the agent receives and event in the form of: 
+% \begin{minted}[fontsize=\small]{prolog}
+% !go_order(french,meal(veg,meat,white))
+% \end{minted}
+% It will put it in the event queue, assuming this is the only event the agent selects it for processing. For this event, both plans (P1) and (P2) are relevant with unifier $\sigma$:
+% \begin{minted}[fontsize=\small]{prolog}
+% {Loc/french, Meal/meal(veg,meat,white)}
+% \end{minted}
+% Assuming that the belief base of the agent contains the beliefs \asc{restaurant(french)} (meaning that there exists a French restaurant) and \asc{at(home)} (meaning that the agent is at home), then only the first plan will be an applicable plan for this event, and the applicable unifier will be the same as the relevant unifier. This entails that only plan (P1) will be instantiated as: 
+% \begin{minted}[fontsize=\small]{prolog}
+% +!go_order(french,meal(veg,meat,white)) :
+%     restaurant(french) & not at(french) =>
+%     #move_to(french);
+%     !order(meal(veg,meat,white)).
+% \end{minted}
+
+% As a next step, this instantiation becomes an intention of the agent, and assuming it is the only intention, the agent selects it for execution, the first step \asc{#move_to(french)} is simply a function call. In ASC2, this call could be any callable entity on the JVM's execution classpath. In this example we are assuming that this call somehow relocates agent to the location specified as the parameter. The second step is \asc{!order(meal(veg,meat,white))} which is a sub-goal. In functional terms a sub-goal is processed by the agent as an internal event that will have the same plan and intention selection process.
+
+
+% Note that in case the agent at any step had more than one event to select from, more than one plan or applicable unifier, or more than one intention, then the selection function would have been called to select one of the options.
+
+
+\subsubsection*{ASC2 Structural Architecture}
+The structural architecture of ASC2 agents is based on the Actor model. Each agent consists of multiple actors with different roles: (\romannumeral 1) an \textbf{Interface} actor, (\romannumeral 2) a \textbf{Belief Base} actor, (\romannumeral 3), an \textbf{Intention} \textbf{Pool} actor and (\romannumeral 4) $N \ge 1$ \textbf{Intention} actors. Each agent has also non-actor components: (1) a plan library, and (2) one or more belief bases. An overview of this architecture is presented in Figure~\ref{fig:asc2arch}.
 %\begin{itemize}
 %    \item An Interface actor
 %    \item A Belief Base actor
@@ -86,24 +293,33 @@ In contrast to AgentSpeak(L)/Jason, the execution architecture of ASC2 agents is
 %    \item $N \ge 1$ Intention actors
 %\end{itemize}
 
-The plan library of the agent consists of a set of plan rule objects in the form \verb+{e,c,f}+, where \verb+e+ is an object that can be matched and unified with event messages to determine if a plan rule is relevant for that event, \verb+c+ is an expression object that can be sent to the Belief Base actor to determine if the plan is applicable and \verb+f+ is a function representing the body of the plan.
+The plan library of the agent consists of a set of plan rule objects in the form \verb+{e,c,h}+, where \verb+e+ is an object that can be matched and unified with event messages to determine if a plan rule is relevant for that event, \verb+c+ is an expression object that can be sent to the Belief Base actor to determine if the plan is applicable and \verb+h+ is a function representing the body of the plan.
 
 The belief base(s) of the agent can be in practice any type of storage technology. To interface an arbitrary belief base into the agent architecture a translation function needs to be implemented for mapping the query messages into the queries of that belief base and vice versa, translating the responses into result messages.\footnote{For the benchmarks presented in this work we used a lightweight open-source Prolog reasoning engine implemented in Scala called \textit{Styla}, available at \url{https://github.com/fedesilva/styla}. %, % \cite{Styla}
 The library was minimally modified and is available at \url{https://github.com/mostafamohajeri/styla}.}
 
+\begin{figure}[t!]
+  \centering
+  \includegraphics[width=0.70\linewidth]{ch2/arch3.png}
+  \caption{ASC2's structural architecture}
+  \label{fig:asc2arch}
+\end{figure}
+
 \subsubsection{Interface Actor}
 The Interface actor acts as the main entity of the agent. It initializes the Belief Base and Intention Pool actors and then sends the initial beliefs and inferential rules to Belief Base actor as \textit{assert} messages and initial goals to Intention pool actor as \textit{achieve} messages. This actor is the only component of the agent that is accessible from the environment and the other agents: all incoming messages and events must go though this actor and any message sent from this agent will indicate the Interface actor as the sender of message. When the Interface actor receives a new message $m$, based on the type of the message it will either process it itself if $m$ is a control messages, (e.g, \textit{halt}), forward it to Belief Base actor if $m$ is an assert message (e.g, \textit{perception}) or forward it to Intention Pool actor if $m$ is an achieve message (e.g, \textit{request}).
 
+All the external communications of the agent are transmitted through a communication layer. This layer is one of the dependencies that is injected into the agents at initialization time. This allows the designer to implement this layer with any technology (e.g., REST API, gRPC, Message Queues) and inject it into agents to allow them to communicate with other agents (and other entities) using that technology without the need to modify the framework or even the script of the agents.
+
 \subsubsection{Belief Base Actor}
 The Belief Base actor maintains the connection between other components of the agent and any data storage/reasoning engine that is used as the belief base. This actor accepts query messages (\textit{retract}, 
-\textit{assert} and \textit{unify}) and responds with result of the query. The technology of the data storage(s) is abstracted behind this actor and it can be changed by the programmer without affecting the rest of the framework.% Note that also inferential rules can be seen as \textit{integrity constraints} that the belief base is required to enforce. 
-Apart from processing queries, the Belief Base actor also feeds back \textit{belief-update} events to the Interface actor. The semantics of when these events should be created are externalized to the core of architecture and can be programmable by the designer.
+\textit{assert} and \textit{unify}) and responds with result of the query. The technology of the data storage(s) is abstracted behind this actor and it can be changed by the programmer without affecting the rest of the framework. The specific implementation of the belief-base is injected to the agent initialization time. % Note that also inferential rules can be seen as \textit{integrity constraints} that the belief base is required to enforce. 
+Apart from processing queries, the Belief Base actor also feeds back \textit{belief-update} events to the Interface actor. The semantics of when these events should be created are externalized to the core of architecture and can be programmable by the designer. This is the inversion of control as the belief base can control other components by sending messages to them.
 
 \subsubsection{Intention Pool actor}
-The Intention Pool actor receives events from the Interface actor and processes them. To process a received event \verb+v+, the set of relevant plan rules \verb+{e,c,f}+ are selected from the plan library by matching and unifying \verb+v+ against \verb+e+. Then these relevant plans are fetched from the plan library and sent to an idle Intention actor. The Intention pool actor can spawn $N$ Intention actors, where the configurable number $N$ dictates the number of concurrent intentions each agent can have at each instant. This actor uses a prioritized mailbox that sorts the messages based on the externalized programmable priority function $S_E$ and a new event is processed only if there are idle Intention actors to forward it to. This mechanism makes sure that as long as there are no resources available, new events stay in the mailbox to be re-prioritized by $S_E$ and when an idle Intention actor becomes available the event with the highest priority is processed \footnote{In the current implementation, the Intention pool actor exploits the \textit{Router} feature of Akka.}. % is used to implement the Intention pool actor.
+The Intention Pool actor receives events from the Interface actor and processes them. To process a received event \verb+v+, the set of relevant plan rules \verb+{e,c,h}+ are selected from the plan library by matching and unifying \verb+v+ against \verb+e+. Then these relevant plans are fetched from the plan library and sent to an idle Intention actor. The Intention pool actor can spawn $N$ Intention actors, where the configurable number $N$ dictates the number of concurrent intentions each agent can have at each instant. This actor uses a prioritized mailbox that sorts the messages based on the externalized programmable priority function $S_E$ and a new event is processed only if there are idle Intention actors to forward it to. This mechanism makes sure that as long as there are no resources available, new events stay in the mailbox to be re-prioritized by $S_E$ and when an idle Intention actor becomes available the event with the highest priority is processed \footnote{In the current implementation, the Intention pool actor exploits the \textit{Router} feature of Akka.}. % is used to implement the Intention pool actor.
 
 \subsubsection{Intention Actor}
-An Intention actor is a reusable unit of execution for the agent. It receives an event \verb+v+ alongside a set of plan rule objects \verb+{e,c,f}+ from the Intention Pool actor for execution. The execution consists of three phases: (\romannumeral 1) the applicability of each plan rule is checked by sending a query message containing \verb+c+ to the Belief Base actor; (\romannumeral 2) from the set of applicable plans, one is selected by the externalized programmable function $S_P$ for execution; (\romannumeral 3) the function  \verb+f+ of the selected plan is executed by the Intention actor. After the execution of \verb+v+ is completed either by success or failure status, a message is sent to the actor which originally requested \verb+v+ containing the completion status and also a message is sent to Intention Pool actor signaling that this actor is now idle.
+An Intention actor is a reusable unit of execution for the agent. It receives an event \verb+v+ alongside a set of plan rule objects \verb+{e,c,h}+ from the Intention Pool actor for execution. The execution consists of three phases: (\romannumeral 1) the applicability of each plan rule is checked by sending a query message containing \verb+c+ to the Belief Base actor; (\romannumeral 2) from the set of applicable plans, one is selected by the externalized programmable function $S_P$ for execution; (\romannumeral 3) the function  \verb+h+ of the selected plan is executed by the Intention actor. After the execution of \verb+v+ is completed either by success or failure status, a message is sent to the actor which originally requested \verb+v+ containing the completion status and also a message is sent to Intention Pool actor signaling that this actor is now idle.
 
 
 \subsection{Translation Method}
@@ -123,13 +339,13 @@ At syntactic level, initial beliefs and inferential rules are logic-style expres
 and a term and they translate to a \verb+Goal+ object encapsulating the prefix and a \verb+Term+ object.
 
 \subsubsection{Plan Rules}
-A plan rule $<e,c,f>$, should be translated into the object \verb+{e,c,f}+ which will be part of the plan library. The triggering event of the plan rule $e$ consists of a trigger (one of \verb#+!,-!,+?,+,-#) and a term $t$. The triggers convey the relevance of the plan to different event types while $t$ can be seen as the payload of that event; \verb#+!# relates to adoption of a new goal, \verb#-!# relates to failure of a goal, \verb#+?# relates to testing if a term holds true, \verb#+# and \verb#-# respectively relate to assertion and retraction of a belief. The triggering event $e$ then translates to an \verb+Event+ object which encapsulates the trigger and the translated \verb+Term+ object of $t$. The context condition $c$ is an expression and translates to an \verb+Expression+ object. The plan body $f$ of a plan rule consist of zero or more steps. %and each step can be one of the plan step types. 
+A plan rule $<e,c,h>$, should be translated into the object \verb+{e,c,h}+ which will be part of the plan library. The triggering event of the plan rule $e$ consists of a trigger (one of \verb#+!,-!,+?,+,-#) and a term $t$. The triggers convey the relevance of the plan to different event types while $t$ can be seen as the payload of that event; \verb#+!# relates to adoption of a new goal, \verb#-!# relates to failure of a goal, \verb#+?# relates to testing if a term holds true, \verb#+# and \verb#-# respectively relate to assertion and retraction of a belief. The triggering event $e$ then translates to an \verb+Event+ object which encapsulates the trigger and the translated \verb+Term+ object of $t$. The context condition $c$ is an expression and translates to an \verb+Expression+ object. The plan body $h$ of a plan rule consist of zero or more steps. %and each step can be one of the plan step types. 
 %The plan body 
-It is translated into a function \verb+f+, which contains the steps of $f$ as imperative lines of code implemented in it. Each type of step is translated differently as is described below.
+It is translated into a function \verb+h+, which contains the steps of $h$ as imperative lines of code implemented in it. Each type of step is translated differently as is described below.
 
 \paragraph{Primitive Actions}
-A primitive action of the form \verb+#f(...)+ %for an agent 
-is translated into a lower-level call to a function \verb+f+ defined in the underlying language with its respective parameters. % Like other low-level access statements these can be any function available on the name space of the agent's object. 
+A primitive action of the form \verb+#h(...)+ %for an agent 
+is translated into a lower-level call to a function \verb+h+ defined in the underlying language with its respective parameters. % Like other low-level access statements these can be any function available on the name space of the agent's object. 
 % A step that is indicated by the parser as a primitive action, is translated into a function call 
 
 \paragraph{Variable Assignments}
@@ -139,7 +355,7 @@ Variable assignments in form of \verb+V = exp+ are used to (re-)assign the resul
 Belief query steps are composed of a prefix \verb|+,-| and a term $t$. The prefixes respectively mean assertion and retraction. As the belief base of the agent is abstracted by the Belief Base actor, a belief query step is a blocking message to the Belief Base actor containing the prefix and the \verb+Term+ object of $t$.
 
 \paragraph{Sub-Goal Adoption}
-Task decomposition is crucial component of BDI-like agents and in essence is the ability to adopt sub-goals depending on the context of a plan. At the syntactic level, a (sub-)goal adoption is a prefix (e.g, \verb+!,?+) plus a term $t$. The prefixes respectively mean achievement and test goals. In the translation method a sub-goal adoption step is translated as two phases, (\romannumeral 1) a plan selection by using $S_P$ is done to select and fetch a plan rule object \verb+{e,c,f}+ from the plan library, (\romannumeral 2) the function \verb+f(...)+ is called with any parameters that $t$ may have as the arguments of \verb+f+.
+Task decomposition is crucial component of BDI-like agents and in essence is the ability to adopt sub-goals depending on the context of a plan. At the syntactic level, a (sub-)goal adoption is a prefix (e.g, \verb+!,?+) plus a term $t$. The prefixes respectively mean achievement and test goals. In the translation method a sub-goal adoption step is translated as two phases, (\romannumeral 1) a plan selection by using $S_P$ is done to select and fetch a plan rule object \verb+{e,c,h}+ from the plan library, (\romannumeral 2) the function \verb+h(...)+ is called with any parameters that $t$ may have as the arguments of \verb+h+.
 
 \paragraph{Control Flow Structures}
 The compilation method of ASC2 supports a  straightforward mapping of simple control flow structures such as loops and conditionals to their executable counterparts. The translation of these control structures to the underlying language is performed one-to-one; for example an \verb+if/else+ in the DSL is simply translated to an \verb+if/else+ in the underlying language.
@@ -810,7 +1026,7 @@ at every reasoning cycle, a Jason agent takes the next step from each of its int
 
 \section{Discussion}
 \label{sec:discussion}
-This paper presents and evaluates a framework for an AOP language based on AgentSpeack(L) relying on compilation. Compilation in this context is not novel as it has been used previously by other AOP frameworks like SARL \cite{Sarl} and ASTRA \cite{Astra}. The novelty of this work lies in two aspects. First, unlike SARL and ASTRA, that use a DSL very close to their underlying language (Java), ASC2 uses a logic-based DSL close to AgentSpeak(L). %\Gio{but in principle,} 
+This chapter presents and evaluates a framework for an AOP language based on AgentSpeack(L) relying on compilation. Compilation in this context is not novel as it has been used previously by other AOP frameworks like SARL \cite{Sarl} and ASTRA \cite{Astra}. The novelty of this work lies in two aspects. First, unlike SARL and ASTRA, that use a DSL very close to their underlying language (Java), ASC2 uses a logic-based DSL close to AgentSpeak(L). %\Gio{but in principle,} 
 As our pipeline starts from an \textit{antlr} grammar, in principle 
 the current DSL can be replaced by any other AOP language that can be mapped to the ASC2 abstract execution architecture. Second, our approach maps the DSL into an architecture that exploits the Actor model. This means that not only the final executable model is more robust, because it takes advantage of the established concurrency model and the maturity of the libraries implementing the Actor model (e.g, Akka), but also that the translation itself is an open process, so its product becomes in principle more understandable for the programmer.
 
