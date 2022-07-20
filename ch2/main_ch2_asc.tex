@@ -308,7 +308,12 @@ The library was minimally modified and is available at \url{https://github.com/m
 \subsubsection{Interface Actor}
 The Interface actor acts as the main entity of the agent. It initializes the Belief Base and Intention Pool actors and then sends the initial beliefs and inferential rules to Belief Base actor as \textit{assert} messages and initial goals to Intention pool actor as \textit{achieve} messages. This actor is the only component of the agent that is accessible from the environment and the other agents: all incoming messages and events must go though this actor and any message sent from this agent will indicate the Interface actor as the sender of message. When the Interface actor receives a new message $m$, based on the type of the message it will either process it itself if $m$ is a control messages, (e.g, \textit{halt}), forward it to Belief Base actor if $m$ is an assert message (e.g, \textit{perception}) or forward it to Intention Pool actor if $m$ is an achieve message (e.g, \textit{request}).
 
+
+\paragraph{Communication Interface}
 All the external communications of the agent are transmitted through a communication layer. This layer is one of the dependencies that is injected into the agents at initialization time. This allows the designer to implement this layer with any technology (e.g., REST API, gRPC, Message Queues) and inject it into agents to allow them to communicate with other agents (and other entities) using that technology without the need to modify the framework or even the script of the agents.
+
+The communications interface of the agents is based on speech act preformatives. On a practical level, they are implemented with actions like \mintinline{text}{#achieve} which relays an achievement goal event, \mintinline{text}{#tell} and \mintinline{text}{#untell} which relay belief-update events, and \mintinline{text}{#ask}/\mintinline{text}{#respond} which can be used between agents as synchronous communication with test goal events.
+
 
 \subsubsection{Belief Base Actor}
 The Belief Base actor maintains the connection between other components of the agent and any data storage/reasoning engine that is used as the belief base. This actor accepts query messages (\textit{retract}, 
@@ -330,6 +335,16 @@ For each entity of the DSL, a mapping is defined to generate the code in the exe
 \subsubsection{Terms and Expressions}
 The ASC2 DSL uses Prolog-style terms and expressions. In the translation of an script written in the DSL, each term and expression (including inferential rules) maps to a \verb+Term+ or \verb+Expression+ object which encapsulates the parsed data (potentially containing nested \verb+Term+s and \verb+Expression+s).
 
+Any expression in ASC2 can be analysed in two ways: (1) external to the script by querying the belief-base, and, (2) locally as part of the low-level code. The first approach makes use of any data-storage engine utilized by the belief-base. This process is by default present in checking the context conditions of plans, but can also be used at any point in the agent's script; in our example the expression:
+\begin{minted}[fontsize=\small]{prolog}
+restaurant(french) & not at(french)
+\end{minted}
+\noindent can be checked against the belief base to check if it is true. This approach utilizes the full capacity of the belief-base but is also less efficient. The second type of expression are locally calculated, and for example are used in control flow structures \asc{if/else} or variable assignments. As an example, if in the context of execution of a plan we have a variable \asc{Loc} that is grounded by the string value \asc{"french"}, the statement:
+\begin{minted}[fontsize=\small]{prolog}
+Loc + "_restaurant" == "french_restaurant"
+\end{minted}
+\noindent can be calculated locally to boolean value \asc{true} without the need to query the belief-base. Intuitively this second approach does not utilize the capabilities of the belief-base but the local nature of its translation ---it is calculated locally by the underlying language--- can be very efficient.
+
 \paragraph{Access to the Lower-Level Language} As consequence of an approach based on compilation, the DSL provides direct access to any object or function available in the agent's name space\footnote{In the Scala implementation, any object or function which is accessible via the Java class path.}. These lower-level access statements, indicated by the token \verb+#+, are translated literally to the same statement in the underlying language. This capability provides fast and seamless reuse of libraries already established for the underlying language.
 
  %alongside implicit and explicit type conversions,
@@ -339,9 +354,11 @@ At syntactic level, initial beliefs and inferential rules are logic-style expres
 and a term and they translate to a \verb+Goal+ object encapsulating the prefix and a \verb+Term+ object.
 
 \subsubsection{Plan Rules}
-A plan rule $<e,c,h>$, should be translated into the object \verb+{e,c,h}+ which will be part of the plan library. The triggering event of the plan rule $e$ consists of a trigger (one of \verb#+!,-!,+?,+,-#) and a term $t$. The triggers convey the relevance of the plan to different event types while $t$ can be seen as the payload of that event; \verb#+!# relates to adoption of a new goal, \verb#-!# relates to failure of a goal, \verb#+?# relates to testing if a term holds true, \verb#+# and \verb#-# respectively relate to assertion and retraction of a belief. The triggering event $e$ then translates to an \verb+Event+ object which encapsulates the trigger and the translated \verb+Term+ object of $t$. The context condition $c$ is an expression and translates to an \verb+Expression+ object. The plan body $h$ of a plan rule consist of zero or more steps. %and each step can be one of the plan step types. 
+A plan rule $<e,c,h>$, should be translated into the object \verb+{e,c,h}+ which will be part of the plan library. The triggering event of the plan rule $e$ consists of a trigger (one of \verb#+!,-!,+?,+,-#) and a term $t$. The triggers convey the relevance of the plan to different event types while $t$ can be seen as the payload of that event; \verb#+!# relates to adoption of a new goal, \verb#-!# relates to failure of a goal, \verb#+?# relates to test goals, \verb#+# and \verb#-# respectively relate to assertion and retraction of a belief. The triggering event $e$ then translates to an \verb+Event+ object which encapsulates the trigger and the translated \verb+Term+ object of $t$. The context condition $c$ is an expression and translates to an \verb+Expression+ object which can be sent to the Belief-Base actor in a synchronous manner, and the response to that message determines if the plan is applicable in the current context and also returns the substitution for the variable (if any). The plan body $h$ of a plan rule consist of zero or more steps. %and each step can be one of the plan step types. 
 %The plan body 
 It is translated into a function \verb+h+, which contains the steps of $h$ as imperative lines of code implemented in it. Each type of step is translated differently as is described below.
+
+
 
 \paragraph{Primitive Actions}
 A primitive action of the form \verb+#h(...)+ %for an agent 
@@ -351,8 +368,8 @@ is translated into a lower-level call to a function \verb+h+ defined in the unde
 \paragraph{Variable Assignments}
 Variable assignments in form of \verb+V = exp+ are used to (re-)assign the result value of an expression \verb+exp+ to a variable \verb+V+. ASC2 uses an internal map-like approach to store variables that also manages variable scopes, meaning that each code block (e.g, plan body, condition block) holds a map of all variables declared in that scope which also inherits the variables in its parent scope. A variable assignment is translated to an append operation for the variable map by using the $V$ as the key and \verb+exp+ as the value.
 
-\paragraph{Belief Queries}
-Belief query steps are composed of a prefix \verb|+,-| and a term $t$. The prefixes respectively mean assertion and retraction. As the belief base of the agent is abstracted by the Belief Base actor, a belief query step is a blocking message to the Belief Base actor containing the prefix and the \verb+Term+ object of $t$.
+\paragraph{Belief Updates}
+Belief update steps are composed of a prefix \verb|+,-| and a term $t$. The prefixes respectively mean assertion and retraction. As the belief base of the agent is abstracted by the Belief Base actor, a belief update step is a blocking message to the Belief Base actor containing the prefix and the \verb+Term+ object of $t$.
 
 \paragraph{Sub-Goal Adoption}
 Task decomposition is crucial component of BDI-like agents and in essence is the ability to adopt sub-goals depending on the context of a plan. At the syntactic level, a (sub-)goal adoption is a prefix (e.g, \verb+!,?+) plus a term $t$. The prefixes respectively mean achievement and test goals. In the translation method a sub-goal adoption step is translated as two phases, (\romannumeral 1) a plan selection by using $S_P$ is done to select and fetch a plan rule object \verb+{e,c,h}+ from the plan library, (\romannumeral 2) the function \verb+h(...)+ is called with any parameters that $t$ may have as the arguments of \verb+h+.
@@ -368,6 +385,8 @@ Our current implementation of ASC2 is written in Scala and is based on the Akka 
 \footnote{Source code: \url{https://github.com/mostafamohajeri/agentscript}.
 %of the execution framework can be found in \cite{AgentScript}
 }. The transportation layer makes simply use of Akka's typed messages, but other solutions can be easily integrated.
+
+
 
 \section{Benchmarks}
 \label{sec_bench}

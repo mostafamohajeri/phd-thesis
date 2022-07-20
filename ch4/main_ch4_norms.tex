@@ -45,9 +45,9 @@ To illustrate our approach, we will consider as a running example a marketplace 
 %To capture those, we need to further increase the design granularity of our target system.
 %
 \subsection{Intentional agents}
-The intentional agents defined in this chapter intuitively are implemented in ASC2. The only aspect of ASC2 agents that needs to be revisited here is the communications interface. The communications interface of the agents is based on speech act preformatives and implemented with actions like \mintinline{text}{#achieve} which relays an achievement goal event, \mintinline{text}{#tell} and \mintinline{text}{#untell} which relay belief-update events, and \mintinline{text}{#ask}/\mintinline{text}{#respond} which can be used between agents as synchronous communication with test goal events.
+The intentional agents defined in this chapter intuitively are implemented in ASC2. 
 %\gio{[There are a few things which are not explained of the code. e.g. a couple of words on the initalization of the normative advisor, and more importantly on \texttt{\#achieve}... what does it serve for? Has it any connection with the speech act? I would take one plan rule (e.g. \texttt{+offer}) and explain it in detail. Overall the granularity/size of this paragraph should be similar to the one of eFLINT.]}
-As an example of an AgentScript program and continuing with the example, Listing~\ref{asc:buyer}, presents the script of a buyer agent. The initial beliefs (lines 1-3), initial goals (line 5), and plan rules (line 7 and onwards) are the components of the script. The script is further explained in Section~\ref{sec:scenario}. 
+Continuing with the example, Listing~\ref{asc:buyer}, presents the script of a buyer agent. The initial beliefs (lines 1-3), initial goals (line 5), and plan rules (line 7 and onwards) are the components of the script. The script is further explained in Section~\ref{sec:scenario}. 
 
 % Intentional agents are generally approached in the computational realm via the \textit{belief-desire-intention} (BDI) model \cite{Rao1995}, % is used as the reference to define intentional agents. 
 % %Having its roots in a theory of mind \cite{bratman1987intention}, the BDI model has been 
