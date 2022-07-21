@@ -309,15 +309,10 @@ The library was minimally modified and is available at \url{https://github.com/m
 The Interface actor acts as the main entity of the agent. It initializes the Belief Base and Intention Pool actors and then sends the initial beliefs and inferential rules to Belief Base actor as \textit{assert} messages and initial goals to Intention pool actor as \textit{achieve} messages. This actor is the only component of the agent that is accessible from the environment and the other agents: all incoming messages and events must go though this actor and any message sent from this agent will indicate the Interface actor as the sender of message. When the Interface actor receives a new message $m$, based on the type of the message it will either process it itself if $m$ is a control messages, (e.g, \textit{halt}), forward it to Belief Base actor if $m$ is an assert message (e.g, \textit{perception}) or forward it to Intention Pool actor if $m$ is an achieve message (e.g, \textit{request}).
 
 
-\paragraph{Communication Interface}
-All the external communications of the agent are transmitted through a communication layer. This layer is one of the dependencies that is injected into the agents at initialization time. This allows the designer to implement this layer with any technology (e.g., REST API, gRPC, Message Queues) and inject it into agents to allow them to communicate with other agents (and other entities) using that technology without the need to modify the framework or even the script of the agents.
-
-The communications interface of the agents is based on speech act preformatives. On a practical level, they are implemented with actions like \mintinline{text}{#achieve} which relays an achievement goal event, \mintinline{text}{#tell} and \mintinline{text}{#untell} which relay belief-update events, and \mintinline{text}{#ask}/\mintinline{text}{#respond} which can be used between agents as synchronous communication with test goal events.
-
 
 \subsubsection{Belief Base Actor}
 The Belief Base actor maintains the connection between other components of the agent and any data storage/reasoning engine that is used as the belief base. This actor accepts query messages (\textit{retract}, 
-\textit{assert} and \textit{unify}) and responds with result of the query. The technology of the data storage(s) is abstracted behind this actor and it can be changed by the programmer without affecting the rest of the framework. The specific implementation of the belief-base is injected to the agent initialization time. % Note that also inferential rules can be seen as \textit{integrity constraints} that the belief base is required to enforce. 
+\textit{assert} and \textit{unify}) and responds with result of the query. The technology of the data storage(s) is abstracted behind this actor and it can be changed by the programmer without affecting the rest of the framework. The specific implementation of the belief base is injected to the agent initialization time. % Note that also inferential rules can be seen as \textit{integrity constraints} that the belief base is required to enforce. 
 Apart from processing queries, the Belief Base actor also feeds back \textit{belief-update} events to the Interface actor. The semantics of when these events should be created are externalized to the core of architecture and can be programmable by the designer. This is the inversion of control as the belief base can control other components by sending messages to them.
 
 \subsubsection{Intention Pool actor}
@@ -335,41 +330,89 @@ For each entity of the DSL, a mapping is defined to generate the code in the exe
 \subsubsection{Terms and Expressions}
 The ASC2 DSL uses Prolog-style terms and expressions. In the translation of an script written in the DSL, each term and expression (including inferential rules) maps to a \verb+Term+ or \verb+Expression+ object which encapsulates the parsed data (potentially containing nested \verb+Term+s and \verb+Expression+s).
 
-Any expression in ASC2 can be analysed in two ways: (1) external to the script by querying the belief-base, and, (2) locally as part of the low-level code. The first approach makes use of any data-storage engine utilized by the belief-base. This process is by default present in checking the context conditions of plans, but can also be used at any point in the agent's script; in our example the expression:
+Any expression in ASC2 can be translated and analysed in two ways: (1) external to the script by querying the belief base, and, (2) locally as part of the low-level code. The first approach makes use of any data-storage engine utilized by the belief base. This process is by default present in checking the context conditions of plans, but can also be used at any point in the agent's script; in our example the expression:
 \begin{minted}[fontsize=\small]{prolog}
-restaurant(french) & not at(french)
+restaurant(Loc) && not at(Loc)
 \end{minted}
-\noindent can be checked against the belief base to check if it is true. This approach utilizes the full capacity of the belief-base but is also less efficient. The second type of expression are locally calculated, and for example are used in control flow structures \asc{if/else} or variable assignments. As an example, if in the context of execution of a plan we have a variable \asc{Loc} that is grounded by the string value \asc{"french"}, the statement:
+
+\noindent can both be checked against the belief base to check if it can be proven, also a substitution for the variable \asc{Loc} will be returned ---that is if the belief base uses a prolog-like reasoning engine. In any case, this type of expression utilizes the full capacity of the belief base which can also be less efficient. The translated Scala version of this expression is illustrated in following, note that this is simply an object instantiation that can be analysed by the belief base's reasoning engine:
+\begin{minted}[fontsize=\small]{java}
+StructTerm(",",
+    Seq(StructTerm("restaurant",
+            Seq(vars("Loc"))),
+        StructTerm("not",
+            Seq(StructTerm("at",Seq(vars("Loc")))))))
+\end{minted}
+
+The second type are expressions that can be calculated locally, and for example are used in control flow structures \asc{if/else} or variable assignments. As an example, if in the context of execution of a plan we have a variable \asc{Loc} that is grounded by the string value \asc{"french"}, the statement:
 \begin{minted}[fontsize=\small]{prolog}
 Loc + "_restaurant" == "french_restaurant"
 \end{minted}
-\noindent can be calculated locally to boolean value \asc{true} without the need to query the belief-base. Intuitively this second approach does not utilize the capabilities of the belief-base but the local nature of its translation ---it is calculated locally by the underlying language--- can be very efficient.
+\noindent can be calculated locally to boolean value \asc{true} ---e.g., in a variable assignment statement--- without the need to query the belief base. Intuitively this second approach does not utilize the capabilities of the belief base but the local nature of its translation ---it is calculated locally by the underlying language--- can be very efficient. The translated Scala version of the second expression is, not that unlike before this is already an expression that can be calculated by JVM without the need for any extra reasoning\footnote{Alongside some implicit type conversions}:
+\begin{minted}[fontsize=\small]{java}
+(vars("Loc") + StringTerm("_restaurant"))  ==
+    StringTerm("french_restaurant"))
+\end{minted}
 
-\paragraph{Access to the Lower-Level Language} As consequence of an approach based on compilation, the DSL provides direct access to any object or function available in the agent's name space\footnote{In the Scala implementation, any object or function which is accessible via the Java class path.}. These lower-level access statements, indicated by the token \verb+#+, are translated literally to the same statement in the underlying language. This capability provides fast and seamless reuse of libraries already established for the underlying language.
 
+\paragraph{Access to the Lower-Level Language} As consequence of an approach based on compilation, the DSL provides direct access to any object or function available in the agent's name space ---in the Scala implementation, any object or function which is accessible via the Java class path. These lower-level access statements, indicated by the token \verb+#+, are translated literally to the same statement in the underlying language. This capability provides fast and seamless reuse of libraries already established for the underlying language. Let us take the previous example, but this time also use a few of JVM's basic library methods, namely \asc{String.join} and \asc{String.toUpperCase}:
+\begin{minted}[fontsize=\small]{prolog}
+#String.join("_", Loc, "restaurant").toUpperCase == "FRENCH_RESTAURANT"
+\end{minted}
+\noindent which translates to the valid Scala statement:
+\begin{minted}[fontsize=\small]{java}
+String.join(StringTerm("_"),
+            vars("Loc"),
+            StringTerm("restaurant"))
+                .toUpperCase == 
+                    StringTerm("FRENCH_RESTAURANT"))
+\end{minted}
  %alongside implicit and explicit type conversions,
 
 \subsubsection{Initial Beliefs/Goals and Inferential Rules}
-At syntactic level, initial beliefs and inferential rules are logic-style expressions, and as such they translate to an \verb+Expression+ object counterpart. Initial goals are a combination of a prefix (\verb+!+, designating the adoption of a new goal)
-and a term and they translate to a \verb+Goal+ object encapsulating the prefix and a \verb+Term+ object.
+At syntactic level, initial beliefs and inferential rules are logic-style expressions, and as such they translate to an \asc{Expression} object counterpart. Initial goals are a combination of a prefix (\asc{!}, designating the adoption of a new goal)
+and a term and they translate to a \asc{Goal} object encapsulating the prefix and a \asc{Term} object. At initialization time, the initial beliefs are sent to the Belief Base actor to be asserted and initial goals are adopted sequentially in a synchronous manner, i.e., there is no concurrency.
 
 \subsubsection{Plan Rules}
-A plan rule $<e,c,h>$, should be translated into the object \verb+{e,c,h}+ which will be part of the plan library. The triggering event of the plan rule $e$ consists of a trigger (one of \verb#+!,-!,+?,+,-#) and a term $t$. The triggers convey the relevance of the plan to different event types while $t$ can be seen as the payload of that event; \verb#+!# relates to adoption of a new goal, \verb#-!# relates to failure of a goal, \verb#+?# relates to test goals, \verb#+# and \verb#-# respectively relate to assertion and retraction of a belief. The triggering event $e$ then translates to an \verb+Event+ object which encapsulates the trigger and the translated \verb+Term+ object of $t$. The context condition $c$ is an expression and translates to an \verb+Expression+ object which can be sent to the Belief-Base actor in a synchronous manner, and the response to that message determines if the plan is applicable in the current context and also returns the substitution for the variable (if any). The plan body $h$ of a plan rule consist of zero or more steps. %and each step can be one of the plan step types. 
+A plan rule $<e,c,h>$, should be translated into the object \asc{{e,c,h}} which will be part of the plan library. The triggering event of the plan rule $e$ consists of a trigger (one of \asc{+!,-!,+?,+,-}) and a term $t$. The triggers convey the relevance of the plan to different event types while $t$ can be seen as the payload of that event; \verb#+!# relates to adoption of a new goal, \verb#-!# relates to failure of a goal, \verb#+?# relates to test goals, \verb#+# and \verb#-# respectively relate to assertion and retraction of a belief. The triggering event $e$ then translates to an \asc{Event} object which encapsulates the trigger and the translated \asc{Term} object of $t$. The context condition $c$ is an expression and translates to an \asc{Expression} object which can be sent to the Belief Base actor in a synchronous manner, and the response to that message determines if the plan is applicable in the current context and also returns the substitution for the variable (if any). The plan body $h$ of a plan rule consist of zero or more steps. %and each step can be one of the plan step types. 
 %The plan body 
 It is translated into a function \verb+h+, which contains the steps of $h$ as imperative lines of code implemented in it. Each type of step is translated differently as is described below.
 
 
 
 \paragraph{Primitive Actions}
-A primitive action of the form \verb+#h(...)+ %for an agent 
-is translated into a lower-level call to a function \verb+h+ defined in the underlying language with its respective parameters. % Like other low-level access statements these can be any function available on the name space of the agent's object. 
+A primitive action of the form \asc{#h(...)} is in practice a lower-level function call in the underlying language and it %for an agent 
+is translated into a call to a function \asc{h(...)} with its respective parameters. In the case of Java/Scala, this can be any callable entity on JVM's \textit{classpath}. Take for example Scala's \asc{println} method, to call this method as a primitive action a simple \asc{#println("hello")} can be a statement used in ASC2, and a translation of this call will be:
+\begin{minted}[fontsize=\small]{java}
+primitive_handler.execute(() => println(StringTerm("hello")))
+\end{minted}
+\noindent Note that in this translation the object \asc{primitive_handler} is a dependency of the agent that in its default implementation simply calls the function passed to it, but, can be potentially customized and injected to the agent for more flexible control on what and how the functions are being called.
+
+However, often the designer will need to define new domain specific methods to call from the agent's script as primitive actions, and these methods need access to the execution context of the agent itself. In every block of code in the translated code, there is an implicit value \footnote{This specifically refers to Scala's implicit values, these values do not need to be passed explicitly in a function call, instead if the corresponding method has declared them as an implicit parameter in its signature, Scala will automatically look for them and pass them along as a parameter.} called \asc{executionContext} that contains the information about the agent and its execution context. This object contains information varying from simple attributes e.g., agent's name and type, to more technical information e.g., the current thread the function was called in, to even higher level information e.g., the intention or goal that was the source of the call or even on which agent's request this goal was adopted. To access this object from the context of a primitive action, the designer merely needs to declare it as an implicit parameter for the corresponding method. Take for example a simple primitive action that prints the agent's name and can be called from the script as \asc{#print_name}, the implementation for this function will be:
+\begin{minted}[fontsize=\small]{java}
+def print_name()(implicit executionContext: ExecutionContext) =
+    println(executionContext.name)
+\end{minted}
+
+One of the most important advantage about how ASC2 handles primitive actions is that they do not need to be implemented in any specific class nor do they need to be passed to the agents at initialization time. This makes the development of agents and MAS much more scalable as primitive actions in a domain and the agent's scripts are completely isolated: the \asc{#print_me} action can be built, packaged as a JVM artifact and placed in an artifact repository, then, it can simply be utilized by other designers by importing that artifact in a project\footnote{The more detailed exploration of development ecosystem in ASC2 is illustrated in Chapter~\ref{ch:emas}}.
+
+% Like other low-level access statements these can be any function available on the name space of the agent's object. 
 % A step that is indicated by the parser as a primitive action, is translated into a function call 
 
-\paragraph{Variable Assignments}
-Variable assignments in form of \verb+V = exp+ are used to (re-)assign the result value of an expression \verb+exp+ to a variable \verb+V+. ASC2 uses an internal map-like approach to store variables that also manages variable scopes, meaning that each code block (e.g, plan body, condition block) holds a map of all variables declared in that scope which also inherits the variables in its parent scope. A variable assignment is translated to an append operation for the variable map by using the $V$ as the key and \verb+exp+ as the value.
+\paragraph{Variables and Assignment Statements}
+Variable assignment statements in form of \verb+V = exp+ are used to (re-)assign the result value of an expression \verb+exp+ to a variable \verb+V+. ASC2 uses an internal map-like approach to store variables that also manages variable scopes, meaning that each code block (e.g, plan body, condition block) holds a map of all variables declared in that scope which also inherits the variables in its parent scope. Every read/write to a variable \asc{V} then becomes a read/write operation to a member of the variable's map with the key \asc{"V"}. A variable assignment is translated to an (overwriting) append operation for the variable's map by using the $V$ as the key and \verb+exp+ as the value. As an example the statement \asc{V = V + 1} is translated to:
 
+\begin{minted}[fontsize=\small]{java}
+vars += ("V" ->  (vars("V") + IntTerm(1)))
+\end{minted}
 \paragraph{Belief Updates}
-Belief update steps are composed of a prefix \verb|+,-| and a term $t$. The prefixes respectively mean assertion and retraction. As the belief base of the agent is abstracted by the Belief Base actor, a belief update step is a blocking message to the Belief Base actor containing the prefix and the \verb+Term+ object of $t$.
+Belief update steps are composed of a prefix \verb|+,-| and a term $t$. The prefixes respectively mean assertion and retraction. As the belief base of the agent is abstracted by the Belief Base actor, a belief update step is a blocking message to the Belief Base actor about assertion or retraction of the \verb+Term+ object of $t$. At a practical level, after translation belief-updates are technically low-level calls to a specific function, take for example the statement \asc{+at(home)}, when translated becomes:
+\begin{minted}[fontsize=\small]{java}
+belief_handler.execute(
+    Belief.ASSERT,
+    StructTerm("at",Seq(AtomTerm("home"))))
+\end{minted}
+In this code the object \asc{belief_handler}  is a dependency of the agent that in its default implementation performs the aforementioned messaging with the Belief Base actor, but, can be potentially customized and injected into the agent for more flexible control on how belief updates are handled. Furthermore, ASC2 agents also react to belief-update triggers that may happen by assertion or retraction of a belief, however that process is completely controlled by the Belief Base actor that in its default implementation when a belief is asserted or retracted sends event messages to the Interface actor; this process can be customized by the designer\footnote{At this point it may seem this much flexibility is not a requirement for a BDI framework. Evidently, most BDI frameworks are designed with the assumption of using a prolog-like backward-chaining query-response belief base. However, there are many interesting experiments that can be performed if that was not a limitation, an example illustrated in Chapter~\ref{ch:norm} where the belief base of the agents is replaced with a forward chaining norm reasoner that is continuously producing normative events for the agent.}.
 
 \paragraph{Sub-Goal Adoption}
 Task decomposition is crucial component of BDI-like agents and in essence is the ability to adopt sub-goals depending on the context of a plan. At the syntactic level, a (sub-)goal adoption is a prefix (e.g, \verb+!,?+) plus a term $t$. The prefixes respectively mean achievement and test goals. In the translation method a sub-goal adoption step is translated as two phases, (\romannumeral 1) a plan selection by using $S_P$ is done to select and fetch a plan rule object \verb+{e,c,h}+ from the plan library, (\romannumeral 2) the function \verb+h(...)+ is called with any parameters that $t$ may have as the arguments of \verb+h+.
@@ -378,14 +421,16 @@ Task decomposition is crucial component of BDI-like agents and in essence is the
 The compilation method of ASC2 supports a  straightforward mapping of simple control flow structures such as loops and conditionals to their executable counterparts. The translation of these control structures to the underlying language is performed one-to-one; for example an \verb+if/else+ in the DSL is simply translated to an \verb+if/else+ in the underlying language.
 
 \subsection{Tools for Execution}
-The architecture of ASC2 agents is based on actors and for their execution these actors require an \textit{actor system} that \textit{spawn} and \textit{start} them. Additionally, a message \textit{transportation layer} needs to be specified to enable communication between agents. The framework remains agnostic with respect the transportation layer as long as there is an interface to convert messages from and to ASC2's message protocol.
-
-Our current implementation of ASC2 is written in Scala and is based on the Akka framework. In addition to a compiler\footnote{Source code: 
+The architecture of ASC2 agents is based on actors and for their execution these actors require an \textit{actor system} that \textit{spawn} and \textit{start} them. The implementation of ASC2 is written in Scala and is based on the Akka framework. In addition to a compiler\footnote{Source code: 
 \url{https://github.com/mostafamohajeri/scriptcc-translator}.}, it includes a minimal infrastructure that is able to spawn and start the compiled agents% \cite{CCTranslator}
 \footnote{Source code: \url{https://github.com/mostafamohajeri/agentscript}.
 %of the execution framework can be found in \cite{AgentScript}
-}. The transportation layer makes simply use of Akka's typed messages, but other solutions can be easily integrated.
+}.
 
+\paragraph{Communication Interface}
+All the external communications of the agent are transmitted through one (or more) \textit{transportation layer}. This layer needs to be specified to enable communication between agents. The framework remains agnostic with respect the transportation layer as long as there is an interface to convert messages from and to ASC2's message protocol. The default transportation layer makes use of Akka's typed messages. However, this layer is one of the dependencies that is injected into the agents at initialization time. This allows the designer to implement this layer with any technology (e.g., REST API, gRPC, Message Queues) and inject it into agents to allow them to communicate with other agents (and other entities) using that technology without the need to modify the framework or even the script of the agents.
+
+The communications interface of the agents is based on speech act preformatives. On a practical level, they are implemented with actions like \mintinline{text}{#achieve} which relays an achievement goal event, \mintinline{text}{#tell} and \mintinline{text}{#untell} which relay belief-update events, and \mintinline{text}{#ask}/\mintinline{text}{#respond} which can be used between agents as synchronous communication with test goal events.
 
 
 \section{Benchmarks}
