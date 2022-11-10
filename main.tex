@@ -41,6 +41,15 @@
 \usepackage{booktabs}
 \captionsetup{compatibility=false}
 \usepackage{subcaption}
+\usepackage{amssymb}% http://ctan.org/pkg/amssymb
+\usepackage{pifont}% http://ctan.org/pkg/pifont
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+\usepackage{ntheorem}
+\newcounter{theoremcounter} 
+\numberwithin{theoremcounter}{chapter}
+\theoremstyle{break}
+\newtheorem{ddefinition}[theoremcounter]{Definition}
 % \usemintedstyle{vs}
 %END SYNTAX HIGHLIGHT
 
@@ -67,12 +76,13 @@
 \pagestyle{headings}
 \pagenumbering{arabic}
 
-\include{ch1/main_ch1_introduction}
-\include{ch2/main_ch2_asc}
-\include{ch3/main_ch3_preferences}
-\include{ch4/main_ch4_norms}
-\include{ch5/main_ch5_testing}
-\include{ch6/main_ch6_cases}
+\include{ch_intro/main_ch1_introduction}
+\include{ch_agere/main_ch2_asc}
+\include{ch_aamas2021/main_ch3_preferences}
+\include{ch_eumas/main_ch4_norms}
+\include{ch_emas/main_ch5_testing}
+\include{ch_cmf/main_ch_cmf}
+\include{ch_jurix/main_ch6_cases}
 \include{main_conclusion}
 \appendix
 
@@ -80,8 +90,8 @@
 
 %%  \include the `end matter'
 
-%\bibliographystyle{plain}
-\include{guide_bib}
+\bibliographystyle{plain}
+\include{bib}
 \include{guide_index}
 \include{guide_symbols}
 \include{guide_samenvatting}

@@ -26,12 +26,39 @@ Agent-Oriented Programming (AOP) is a programming paradigm that uses mental atti
 
 
 \subsection{Belief-Desire-Intention (BDI) Model}
-Having its roots in a theory of mind \cite{bratman1987intention}, and so referring to categories that are used typically to address human behaviour to describe agents, the \textit{belief-desire-intention} (BDI) model \cite{Rao1995} has been extensively investigated as basis to represent computational agents that exhibit rational behaviour \cite{Herzig2017}. 
-% uses taxonomies that are used typically to address human behaviour to describe agents.
-\textit{Beliefs} are the factual (and possibly inferential) information the agent has about itself or its environment. \textit{Desires}, in their simplest form, are objectives the agent wants to accomplish. % \Gio{(i.e. facts desired to be true)}.
-%in the environment. 
-\textit{Intentions} are the courses of action the agent has committed to. In practice, BDI agents include concepts of \textit{Goals} and \textit{Plan}. Goals are instantiated desires % associated to reactive behaviors to certain events 
-and plans are abstract specifications relating a goal to the means of achieving that goal (intentions become commitment towards plans). Multiple programming languages and frameworks have been introduced based on the BDI model, as AgentSpeak(L)/Jason \cite{RaoAS1996,Bordini2005}, 3APL/2APL \cite{Dastani2APL}, GOAL \cite{Hindriks2009a} and IMPACT \cite{IMPACT}.
+% Having its roots in a theory of mind \cite{bratman1987intention}, and so referring to categories that are used typically to address human behaviour to describe agents, the \textit{belief-desire-intention} (BDI) model \cite{Rao1995} has been extensively investigated as basis to represent computational agents that exhibit rational behaviour \cite{Herzig2017}. 
+% % uses taxonomies that are used typically to address human behaviour to describe agents.
+% \textit{Beliefs} are the factual (and possibly inferential) information the agent has about itself or its environment. \textit{Desires}, in their simplest form, are objectives the agent wants to accomplish. % \Gio{(i.e. facts desired to be true)}.
+% %in the environment. 
+% \textit{Intentions} are the courses of action the agent has committed to. In practice, BDI agents include concepts of \textit{Goals} and \textit{Plan}. Goals are instantiated desires % associated to reactive behaviors to certain events 
+% and plans are abstract specifications relating a goal to the means of achieving that goal (intentions become commitment towards plans). Multiple programming languages and frameworks have been introduced based on the BDI model, as AgentSpeak(L)/Jason \cite{RaoAS1996,Bordini2005}, 3APL/2APL \cite{Dastani2APL}, GOAL \cite{Hindriks2009a} and IMPACT \cite{IMPACT}.
+
+BDI frameworks are usually described in terms of an \textit{agent theory} and  an \textit{agent computational architecture} \cite{Fisher2007}. % The latter could further divided in data structure and execution cycle. 
+The agent theory usually refer to Bratman's theory of practical reasoning \cite{bratman1987intention}, describing the agent's cognitive state and reasoning process in terms of its \textit{beliefs}, \textit{desires} and \textit{intentions}. Beliefs are the facts that the agents believes to be true in the environment. Desires capture the motivational dimension of the agent, typically in the more concrete form of \textit{goals}, representing procedure/states that the agent wants to perform/achieve. Intentions are selected conducts (or \textit{plans}) that the agent commits to (in order to advance its desires). The agent architecture varies depending on the platform. Taking for instance the BDI platform Jason \cite{Bordini2005}, it consists of perception and actuation modules, a \textit{belief base}, \textit{intention stacks} and an \textit{event queue}. The BDI execution model, describing the agent's reasoning cycle, can be summarized as follows:
+\begin{enumerate}
+	\item  observe the external world to update the internal state (perception);
+	\item  update the event queue with percepts and exogenous events;
+	\item  select events from the event queue to commit to;
+	\item  select plans from the plan library that are relevant to the selected event;
+	\item select an intended means amongst the applicable plans for instantiation; %(intended means)
+	\item push the intended means to an existing or a new intention stack; %(plan instantiation)
+	\item select an intention stack and pull an intention, execute the next step of it; % (intention selection)
+	\item if the step is about a primitive action, perform it, if about a sub-goal post it to the event queue.
+\end{enumerate}
+As exemplified by this description, an essential feature of BDI architectures \cite{Rao1995} is the ability to instantiate plans that can: (a) react to specific situations, and (b) be invoked based on their purpose. Consequently, the BDI execution model naturally relies on a \textit{reactive} model of computation (cf. \textit{event-based programming}, typically used for user interfaces). % In effect, all BDI programming languages presents some form of reactive rules, except for GOAL that does not include the typical goal-driven reasoning as goals are modelled as part of the agent's belief set. 
+Multiple programming languages and frameworks have been introduced based on the BDI model, as AgentSpeak(L)/Jason \cite{RaoAS1996,Bordini2005}, 3APL/2APL \cite{Dastani2APL}, GOAL \cite{Hindriks2009a} and IMPACT \cite{IMPACT}.
+
+% \subsubsection{Goal-plan rules}
+% As a general definition of reactive rules for BDI execution models we consider the notion of \textit{goal-plan rules}, i.e. an \textit{uninstantiated specification of the means for achieving a goal} \cite{Rao1995}, capturing the procedural (\textit{how-to}) knowledge of the agent. % When a goal-plan rule is applicable, it is an optional course of action available to the agent. 
+% A goal-plan rule $pr$ is a tuple $\langle e, c, p \rangle$, where:
+% \begin{itemize}
+% 	\item  $e$ is the \textit{invocation} condition, i.e. the event that makes the rule \textit{relevant}; 
+% 	\item  $c$, the \textit{context} condition, is a first-order formula over the agent's belief base, which makes the rule \textit{applicable};
+% 	\item  $p$, the \textit{plan} body, consisting of a finite and possibly empty sequence of steps $[a_1,a_2,...,a_n]$.% where each $a_i$ is either a \textit{goal} (an invocation attempting to trigger a goal-plan rule), or a \textit{primitive action}. 
+% \end{itemize}
+% A goal-plan rule $pr_i$ is an option or a possibility for achieving a goal-event $e$, if the invocation condition of $pr_i$ matches with $e$, and the preconditions $pr_i$ matches the current state of the world, as perceived or encoded in the agent's beliefs. 
+% In BDI implementations, the preference between these optional conducts is specified through static rankings assigned by the designer, typically via the ordering of the rules in the code. 
+
 
 
 \subsection{Actor Model}
@@ -160,7 +187,7 @@ meal(S,M,W) :- soup(S), main(M), wine(W).
 \label{section_arch}
 ASC2 is primarily motivated by AgentSpeak(L)/Jason as a starting point, and in its default setting it is designed to have the (almost) the same functional architecture. However, from a structural perspective, ASC2 is novel in the sense that it utilizes actor model to instantiate agents as actor micro-system. Because of this, the run-time architecture of ASC2 agents can and should be inspected from both functional and structural perspectives. 
 
-\subsubsection*{ASC2 Functional Architecture}
+\subsubsection{ASC2 Functional Architecture}
 From a functional perspective, ASC2 agents (by default) conceptually follow a reasoning flow very close to the reasoning cycle defined by AgentSpeak(L)/Jason. An ASC2 agent consists of a set of beliefs $B$ called belief base, a set of plans $P$ called plan library, a set of events $E$, a set of intentions $I$, and three selection functions: $S_E$,$S_O$,$S_I$. When the agent receives an (internal or external) event or adopts a goal, it is added to $E$. The selection function $S_E$ selects an event to process from $E$.
 %. 
 
@@ -184,7 +211,7 @@ As for each event there could be multiple applicable unifiers, the selection fun
 
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=0.70\linewidth]{ch2/asc2arch.drawio.png}
+  \includegraphics[width=0.70\linewidth]{ch_agere/asc2arch.drawio.png}
   \caption{ASC2's functional architecture}
   \label{fig:asc2func}
 \end{figure}
@@ -284,7 +311,7 @@ This process is better described in ASC2 as a reasoning flow instead of a reason
 % Note that in case the agent at any step had more than one event to select from, more than one plan or applicable unifier, or more than one intention, then the selection function would have been called to select one of the options.
 
 
-\subsubsection*{ASC2 Structural Architecture}
+\subsubsection{ASC2 Structural Architecture}
 The structural architecture of ASC2 agents is based on the Actor model. Each agent consists of multiple actors with different roles: (\romannumeral 1) an \textbf{Interface} actor, (\romannumeral 2) a \textbf{Belief Base} actor, (\romannumeral 3), an \textbf{Intention} \textbf{Pool} actor and (\romannumeral 4) $N \ge 1$ \textbf{Intention} actors. Each agent has also non-actor components: (1) a plan library, and (2) one or more belief bases. An overview of this architecture is presented in Figure~\ref{fig:asc2arch}.
 %\begin{itemize}
 %    \item An Interface actor
@@ -300,7 +327,7 @@ The library was minimally modified and is available at \url{https://github.com/m
 
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=0.70\linewidth]{ch2/arch3.png}
+  \includegraphics[width=0.70\linewidth]{ch_agere/arch3.png}
   \caption{ASC2's structural architecture}
   \label{fig:asc2arch}
 \end{figure}

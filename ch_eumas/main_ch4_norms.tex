@@ -1,5 +1,5 @@
 \chapter{Introducing Norms to Agents: Normative Advisors}
-
+\label{ch:normative_advisors}
 This paper introduces a modular architecture for integrating norms in autonomous agents and multi-agent systems. As the the interactions between norms and agents can be complex, this architecture utilizes multiple programmable components to model concepts such as adoption of multiple personal and/or collective possibly conflicting norms, interpretation and qualification between social and normative contexts, possibility of intentionally (non-)compliant behaviors and resolving conflicts between norms and desires (or other norms). The architecture revolves around \emph{normative advisors} that act as the bridge between intentional agents and the institutional reality. As a technical contribution, a running implementation of the architecture is presented based on the ASC2 (AgentScript) BDI framework and eFLINT norm reasoner. 
 
 
@@ -34,7 +34,7 @@ Section~\ref{sec:background} gives background on the core components that the pr
 
 \begin{figure}[!tb]
     \centering
-    \includegraphics[width=0.5\textwidth]{ch4/sale-drawio.png}
+    \includegraphics[width=0.5\textwidth]{ch_eumas/sale-drawio.png}
     \caption{Sale transaction as a \textit{Petri net} workflow}
     \label{fig:sale}
 \end{figure}
@@ -400,7 +400,7 @@ To concretize the proposed approach, we will discuss at higher-level why it is f
 \centering
 \begin{minipage}[b]{.7\linewidth}
   \centering
-  \includegraphics[width=\textwidth]{ch4/nbdi.png}
+  \includegraphics[width=\textwidth]{ch_eumas/nbdi.png}
   \captionof{figure}{Normative advisor's architecture}
   \label{fig:nbdi}
 \end{minipage}
@@ -544,7 +544,7 @@ When this agent receives a \asc{+offer/2} message about an item and its price, f
 %   \captionof{figure}{Information }
 %   \label{fig:}
   \centering
-  \includegraphics[width=.8\textwidth]{ch4/ad-hoc.drawio.png}
+  \includegraphics[width=.8\textwidth]{ch_eumas/ad-hoc.drawio.png}
   \captionof{figure}{Market-place model}
   \label{fig:non-gov}
 \end{figure}

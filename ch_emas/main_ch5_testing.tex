@@ -1,6 +1,6 @@
 \chapter{Interoperability and Automated Tests: DevOps}
 
-Testing undeniably plays a central role in the daily practice of software engineering, and this explains why better and more efficient libraries and services are continuously made available to developers and designers. Could the MAS developers community similarly benefit from utilizing state-of-the-art testing approaches? The chapter investigates the possibility of bringing  modern software testing tools as those used in mainstream software engineering into multi-agent systems engineering. Our contribution explores and illustrates, by means of a concrete example, the possible interactions between the agent-based programming framework ASC2 (AgentScript Cross-Compiler)  and various testing approaches (unit/agent testing, integration/system testing, continuous integration) and elaborate on how the design choices of ASC2 enable these interactions.
+Previous chapters introduced different tools and approaches for modelling norm-governed cyber-infrastructures, however, what typically holds such approaches back for real world applications is usability and adoptability for designers and models. Development solutions, such as testing and integration, undeniably play a central role in the daily practice of software engineering, and this explains why better and more efficient libraries and services are continuously made available to developers and designers. Could the MAS developers community similarly benefit from utilizing state-of-the-art testing approaches? The chapter investigates the possibility of bringing  modern software testing and integration tools as those used in mainstream software engineering into multi-agent systems engineering. Our contribution explores and illustrates, by means of a concrete example, the possible interactions between the agent-based programming framework ASC2 (AgentScript Cross-Compiler)  and various testing approaches (unit/agent testing, integration/system testing, continuous integration) and elaborate on how the design choices of ASC2 enable these interactions.
 
 
 \section{Introduction}
@@ -147,7 +147,7 @@ In any certain situation, we can look at a single agent or multiple agents (a MA
 \begin{figure}[t!]
   \centering
   \hspace{-5pt}
-  \includegraphics[width=0.80\linewidth]{ch5/sbt_proc.png}
+  \includegraphics[width=0.80\linewidth]{ch_emas/sbt_proc.png}
   \caption{Compile/Test process of an ASC2 program with sbt}
   \label{fig:sbt1}
 \end{figure}
@@ -414,7 +414,7 @@ An overview of an example CI process for the token ring is presented in Figure \
 \begin{figure}[t!]
   \centering
   \hspace{-5pt}
-  \includegraphics[width=1\linewidth]{ch5/ci.png}
+  \includegraphics[width=1\linewidth]{ch_emas/ci.png}
   \caption{Continuous integration applied on a Token ring program whose master and worker agent scripts are located on other repositories.}
   \label{fig:ci}
   %\Description{Actor-based architecture of an agent}

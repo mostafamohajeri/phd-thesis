@@ -1,5 +1,5 @@
 \chapter{Transparent Decisions in Social Actors: Preferences}
-
+\label{ch:preferences}
 Computational agents based on the BDI framework typically rely on abstract plans and plan refinement to reach a degree of autonomy in dynamic environments: agents are provided with the 
 ability to select \textit{how-to} achieve their goals by choosing from a set of options. In this work we focus on a related, yet under-studied feature: \textit{abstract goals}. These constructs refer to the ability of agents to adopt goals that are not fully grounded at the moment of invocation, refining them only when and where needed: the ability to select \textit{what-to} (concretely) achieve at run-time. We present a preference-based approach to goal refinement,  defining preferences based on extended \textit{Ceteris Paribus} Networks (CP-Nets) for an AgentSpeak(L)-like agent programming language, and mapping the established CP-Nets logic and algorithms to guide the goal refinement step. As a technical contribution, we present an implementation of this method that solely uses a Prolog-like inference engine of the agent's belief-base to reason about preferences, thus minimally affecting the decision-making mechanisms hard-coded in the agent framework.
 
@@ -72,8 +72,13 @@ Since their origin \cite{Rao1995}, the essential feature associated to BDI archi
 %\vspace{5pt} \noindent \textbf{Preference languages} \quad
 
 \subsection{Preference Languages}
-Preferences play a crucial role in decision-making \cite{Pigozzi2016}. Several models of preferences have been presented in the literature (e.g. on decision-making, planning, etc.), with various levels of granularity and expressiveness (see e.g. \cite{Domshlak2011}). The most straightforward \textit{quantitative} approaches are based upon \textit{utility theory} and related forms of decision theory. % A hybrid quantitative method is provided by PDDL3 \cite{Gerevini2005}, an extension of the \textit{planning domain definition language} (PDDL) \cite{McDermott1998}. Although based on qualitative descriptions, these preferences are considered quantitative \cite{Baier2007} because the valuation of each preference is expressed with a numerical value. 
-% In \cite{Cranefield2017} one can find some examples of integration of these types of preferences in a BDI architecture.
+Preferences play a crucial role in decision-making \cite{Pigozzi2016}. Several models of preferences have been presented in the literature (e.g. on decision-making, planning, etc.), with various levels of granularity and expressiveness (see e.g. \cite{Domshlak2011}). Several models of preferences have been presented in the computational literature, with various levels of granularity and expressiveness. For a comprehensive overview (specifically in AI planning), we direct the reader to \cite{Baier2008,Brafman2009}. On a higher level, preference representation methods can be divided into \textit{quantitative} and \textit{qualitative} \cite{Baier2008}.
+
+The most straightforward \textit{quantitative} approaches are based upon \textit{utility theory} and related forms of decision theory.% under which both planning and action selection problems are shown to be effectively expressed. %, either in deterministic or non-deterministic environments. 
+Typically, in quantitative approaches there is a utility function that assigns to each action in each state a (negative or positive) value, then the agent/the planner system tries to \textit{maximise} its utility by choosing actions that would result in higher total utility (including avoiding actions with negative utility, e.g. due to cost). 
+
+A hybrid quantitative method is provided by PDDL3 \cite{Gerevini2005}, an extension of the \textit{planning domain definition language} (PDDL) \cite{McDermott1998}. Although based on qualitative descriptions, these preferences are considered quantitative \cite{Baier2007} because the valuation of each preference is expressed with a numerical value.
+%In \cite{Cranefield2017} one can find some examples of integration of these types of preferences in a BDI architecture.
 Although utility-based approaches bring clear computational advantages, they also suffer from the non-trivial issue of translating users' preferences into utility functions. 
 
 %This explains the existence of a family of \textit{qualitative} or hybrid solutions. A hybrid method is provided by PDDL3 \cite{Gerevini2005}, an extension of the \textit{planning domain definition language} (PDDL) \cite{McDermott1998}.% Although based on qualitative descriptions, these preferences are considered quantitative \cite{Baier2007} because the valuation of each preference is expressed with a numerical value.
@@ -132,18 +137,18 @@ While this work mainly focuses on ASC2 as the BDI framework, the methods propose
 
 % Based on the definitions proposed by Rao et al. in \cite{Rao1995,RaoAS1996}, an agent consists of a set of beliefs $B$ called belief base, a set of plans $P$ called plan library, a set of events $E$, a set of actions $A$, a set of intentions $I$, and three selection functions: $S_E$, that selects events for processing; $S_O$ selects one of applicable plans for instantiation, and, $S_I$ that select an intention. 
 
-\begin{definition}
+\begin{ddefinition}
 [Plan] A (reactive) plan is specified by $e : C \Rightarrow H$ where $e$ is a triggering event, $C$ is a formula capturing context conditions, and $H$ is a sequence of sub-goals or actions to be performed at the occurrence of the trigger event.
-\end{definition}
+\end{ddefinition}
 
-\begin{definition}
+\begin{ddefinition}
 [Relevant plan] A plan in the form of $e : C \Rightarrow H$ is a \emph{relevant plan} with respect to an event $\epsilon$ iff there exists a most general unifier $\sigma$ such that $\epsilon\sigma = e\sigma$. Then, $\sigma$ is referred to as the \emph{relevant unifier} for $\epsilon$.
-\end{definition}
+\end{ddefinition}
 
-\begin{definition}
+\begin{ddefinition}
 [Applicable plan] A plan in the form of $e : C \Rightarrow H$ is an \emph{applicable plan} with respect to an event $\epsilon$ iff there exists a relevant unifier $\sigma$ for $\epsilon$ and there exists a substitution $\delta$ such that $C\sigma\delta$
 is a logical consequence of belief base $B$. The composition $\sigma\delta$ is referred to as the \emph{applicable unifier} for $\epsilon$ and $\delta$ is referred to as a \emph{correct answer substitution}.
-\end{definition}
+\end{ddefinition}
 
 
 %As for each event there could be multiple applicable unifiers, the selection function $S_O$ chooses one of these plans or options and applying the applicable unifier to that plan creates an instantiated plan, i.e, an intended means or the event which will be added to a new or existing intention. Then the $S_I$ function selects an intention which will be executed. We will now consider an example agent to illustrate the plan instantiation process.
@@ -232,7 +237,7 @@ Now assume the agent receives an abstract event \asc{!go_order(L,M)} which basic
 
 \begin{figure}[!t]
   \centering
-  \includegraphics[width=0.70\linewidth]{ch3/outfile.png}
+  \includegraphics[width=0.70\linewidth]{ch_aamas2021/outfile.png}
   \caption{Goal-Plan Refinement of the Agent}
   \label{fig:gp-tree}
 \end{figure}
@@ -298,9 +303,9 @@ Showing that these two forms of statements are equal is intuitive. For instance,
 
 Pure CP-Theory (and by extension CP-Net) statements can be expressed in the form of $G \succ G' \leftarrow C$ where $C=true$, but, as BDI agents are designed to act in dynamic environments with incomplete information and uncertainty, and more often than not, a BDI agent has to react to changes in the environment and failures; simply using static CP-Theory statements is not sufficient for a BDI agent. This is addressed by the \textit{activation} condition $C$ of preference statements. This condition can be any arbitrary Prolog-like expression over the belief base of the agent. A preference statement is \textit{active} if the context condition can be proven from the belief base of the agent. Intuitively this means that the left side of the rule holds true if the right side can be proven. This can drastically increase the expressivity of the preference statements in dynamic environments.
 %and the variables appearing on the left side of the $\leftarrow$. 
-\begin{definition}[Active Preference Statement]
+\begin{ddefinition}[Active Preference Statement]
 At any point in the life-cycle of agent with a belief base $B$ and set of preference statements $\Lambda$, a preference statement $G \succ G' \leftarrow C$ is \textit{active} iff $C$ is a logical consequence of $B$. 
-\end{definition}
+\end{ddefinition}
 
 
 
@@ -322,9 +327,9 @@ The next example further explores these type of preferences, and is an extended 
 
 
 
-%\begin{definition}
+%\begin{ddefinition}
 %A conditional preference relationdenoted as $T \succ T' \leftarrow C$  given a database of facts and rules $B$, at any point in time, iff $C$ is a logical consequence of $B$.
-%\end{definition}
+%\end{ddefinition}
 
 \subsubsection*{Example 3}
 Let us consider some preferences over the actions of our food ordering agent, starting from some preferences over the meal: (R1) for the main course, meat is preferred to fish if at an Italian restaurant; (R2) fish is preferred to meat if at a French restaurant; (R3) if the main course is meat, then a fish soup is preferred to vegetable soup; (R4) if the main course is fish, then a vegetable soup is preferred; (R5) for drinks, red wine is preferred to \textit{any} other type of drink if vegetable soup is in the meal; likewise, (R6) white wine is preferred to \textit{any} other drinks if fish soup is in the meal. 
@@ -377,7 +382,7 @@ Finally, also R9  presents a statement that can not be expressed in CP-Theories,
 
 \begin{figure}[!tbh]
   \centering
-  \includegraphics[width=0.6\linewidth]{ch3/cp-graph.png}
+  \includegraphics[width=0.6\linewidth]{ch_aamas2021/cp-graph.png}
   \caption{Preference Structure of the Agent over \asc{meal/3}}
   \label{fig:cp-graph}
   
@@ -389,10 +394,10 @@ The integration of preferences into the BDI reasoning cycle can be implemented a
 
 To extend the definition of section \ref{ssec:prefs} to unifiers, assuming $\epsilon$ is a partially unbound event and $(\sigma\delta),(\sigma\delta)'$ are two applicable unifiers for $\epsilon$, we say $(\sigma\delta) \succ (\sigma\delta)'$ satisfies a preference statement $G \succ G' \leftarrow C$ if $\epsilon(\sigma\delta)$ can be unified with $G$ and $\epsilon(\sigma\delta)'$ can be unified with $G'$. Given  $\Lambda$, a set of acyclic preference statements in this form, then we say $\Lambda \models (\sigma\delta) \succ (\sigma\delta)'$ iff $(\sigma\delta) \succ (\sigma\delta)'$ satisfies every active preference statement in $\Lambda$. We can then say $(\sigma\delta)$ is \textit{preferred} to $(\sigma\delta)'$ iff $\Lambda \not\models (\sigma\delta)' \succ (\sigma\delta)$. An then we can define the \textit{undominated} or \textit{most preferred} unifier:
 
-\begin{definition}[Most preferred unifier]
+\begin{ddefinition}[Most preferred unifier]
 \label{def:mpu}
 A unifier $(\sigma\delta)$ is referred to as an \textit{undominated} or \textit{most preferred} unifier for an event $\epsilon$ iff $\sigma\delta$ is an applicable unifier for $\epsilon$ and for every other applicable unifier $(\sigma\delta)'$ we have $\Lambda \not\models (\sigma\delta)' \succ (\sigma\delta)$.
-\end{definition}
+\end{ddefinition}
 
 Surprisingly, with this definition, finding the most preferred unifier is simple in a Prolog program as it matches well with how Prolog engines work. Normally in a Prolog program it is not easy to query if a fact holds with respect to every rule concerning that fact, but if a query about a fact fails, this means that all the rules about that fact have failed i.e, that the fact can not be proven. Thus, to find if a unifer $(\sigma\delta)$ is the most preferred one for an event $\epsilon$, it is enough to ask if for every other unifier $(\sigma\delta)'$, the query $(\sigma\delta)' \succ (\sigma\delta)$ fails. Intuitively, running this query for every unifier of $\epsilon$ will result in finding the most preferred unifier. More details on the implementation of this algorithm is presented in section \ref{sec:implementation}.
 
@@ -540,7 +545,7 @@ But this flexibility %comes also
 comes at the cost of static verifiability. Many of the preferences that can be expressed in the proposed representational model %could 
 cannot be statically verified or predicted easily prior to run-time. The redeeming aspect of this problem is that static verification of dynamic agents is well-known to be a challenging task, especially in dynamic environments \cite{Fisher2020,Ferrando2019}. This explains the existence of run-time verification approaches for agent programming frameworks, and probably the most notable works that adopt a (semi-)formal run-time model checking approach to verification are those of the AJPF/MCAPL framework \cite{Dennis2012,Dennis2016}. These approaches are in principle also usable for agents that are enhanced with preferences.
 
-Finally, one of the main requirement behind this work is accessible usability. The transformation method from CP-Theory preference statements to Prolog-like programs has been conceived to enable its use almost directly with AgentSpeak(L)-like frameworks \cite{Bordini2005,ASTRA,mohajeriparizi_2020_run,Aschermann2018}. Indeed, no extra reasoning component is introduced, all the preference reasoning and algorithms required for goal refinement is done through beliefs and inferential rules. Furthermore, unlike many of the works that embed preferences into BDI frameworks, e.g. \cite{Visser2011,Visser2016,Dasgupta2010,Mohajeri2019,Mohajeri2020}, this approach does not require any extra annotation of the agent's script with information about effects of plans or actions and thus makes it more accessible for the designer. 
+Finally, one of the main requirement behind this work is accessible usability. The transformation method from CP-Theory preference statements to Prolog-like programs has been conceived to enable its use almost directly with AgentSpeak(L)-like frameworks \cite{Bordini2005,Astra,mohajeriparizi_2020_run,Aschermann2018}. Indeed, no extra reasoning component is introduced, all the preference reasoning and algorithms required for goal refinement is done through beliefs and inferential rules. Furthermore, unlike many of the works that embed preferences into BDI frameworks, e.g. \cite{Visser2011,Visser2016,Dasgupta2010,Mohajeri2019,Mohajeri2020}, this approach does not require any extra annotation of the agent's script with information about effects of plans or actions and thus makes it more accessible for the designer. 
 
 A concrete Prolog implementation of ordering queries of CP-Nets/CP-Theories was presented, and a working proof of concept for this approach is publicly available\footnote{anonymized}. Analyzing its complexity, we showed that the proposed algorithm run in polynomial time. Such worst-case scenario could be however reduced by optimizing the relative positions of preferential rules and groundings in the belief base, for instance by exploiting statistical information concerning their applicability or relevance for the decision-making cycle. %Note that this information depends on the coupling agent-environment, and a structural change in the workings of one of the two would demand a recomputation of the relative positions of rules and facts.
 
