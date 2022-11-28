@@ -1,6 +1,6 @@
 \chapter{Introducing Norms to Agents: Normative Advisors}
 \label{ch:normative_advisors}
-This paper introduces a modular architecture for integrating norms in autonomous agents and multi-agent systems. As the the interactions between norms and agents can be complex, this architecture utilizes multiple programmable components to model concepts such as adoption of multiple personal and/or collective possibly conflicting norms, interpretation and qualification between social and normative contexts, possibility of intentionally (non-)compliant behaviors and resolving conflicts between norms and desires (or other norms). The architecture revolves around \emph{normative advisors} that act as the bridge between intentional agents and the institutional reality. As a technical contribution, a running implementation of the architecture is presented based on the ASC2 (AgentScript) BDI framework and eFLINT norm reasoner. 
+\textcolor{red}{ABSTRACT REWRITE and SOME TONE CHANGE IN THE BODY} This chapter introduces a modular architecture for integrating norms in autonomous agents and multi-agent systems. As the the interactions between norms and agents can be complex, this architecture utilizes multiple programmable components to model concepts such as adoption of multiple personal and/or collective possibly conflicting norms, interpretation and qualification between social and normative contexts, possibility of intentionally (non-)compliant behaviors and resolving conflicts between norms and desires (or other norms). The architecture revolves around \emph{normative advisors} that act as the bridge between intentional agents and the institutional reality. As a technical contribution, a running implementation of the architecture is presented based on the ASC2 (AgentScript) BDI framework and eFLINT norm reasoner. 
 
 
 \section{Introduction}
@@ -187,7 +187,7 @@ The transitions may output violations if an action triggered a transition with u
 \begin{minipage}{1\textwidth}
   \centering
 \begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt]
-\begin{minted}[fontsize=\small]{haskell}
+\begin{minted}[fontsize=\footnotesize]{haskell}
 // fact definitions
 Fact buyer 
 Fact seller
@@ -530,7 +530,7 @@ The fragment demonstrates that observations about created and terminated duties 
 
 To demonstrate spawning and interacting with a normative advisor, consider again Listing~\ref{asc:buyer} in which a script for a buyer agent is given.
 %
-Together, Listings~\ref{asc:buyer}, ~\ref{listing:eflint}, and ~\ref{asc:advisor} show the DSL code for buyer agent in the market-place as presented on the right side of the Figure~\ref{fig:non-gov}.
+Together, Listings~\ref{asc:buyer}, ~\ref{listing:eflint}, and ~\ref{listing:advisor} show the DSL code for buyer agent in the market-place as presented on the right side of the Figure~\ref{fig:non-gov}.
 %
 The buyer agent spawns a normative advisor, which in turn spawns an eFLINT server (norm reasoner). 
 %
@@ -685,6 +685,10 @@ Secondly, an existing advisor can be instructed to update the norm source of an 
 % Both methods raise questions about consistency and migration; that is, does the new norm instance provide the same interface in terms of action, events and duties to interact with, and is the existing institutional perspective (the facts in the norm base) still consistent with the new norms?
 %
 % A principled approach to handle such adaptations needs to be explored in future work.
+
+
+However, this does not represent the whole adaptation problem as modification of rules can be much more complex. From the prospective of jurisprudence, laws can be separated into primary and secondary rules~\cite{hart2012concept}; primary rules are about how individuals should act (or not act) and duties that should be fulfilled. Secondary rules are about how primary rules should be created and modified. Typically, normative frameworks (including eFLINT) mainly focus on primary rules while rarely taking secondary rules into account. This means that rather than claiming to solve the whole adaptation/modification problem, we provide a potential starting point to tackle this challenge and believe the fundamental architectural design is adequate to implement other more complex approaches to norm adaptation.
+
 
 
 The notions of \textbf{receive and process}/\textbf{ignore} and \textbf{follow}/\textbf{violate} for normative conclusions connect directly to the concept of autonomy in the agent. All of these are are already afforded by ASC2 on the language level (or AgentSpeak(L) in a broader sense) as receive and process/ignore, and, follow/violate are simply a matter of implementing the plans in the agent's script that define the reactions to such conclusions. Then, as the intentional agents' language and execution cycle are not modified in this architecture, intuitively, autonomy of the agents is also not demoted by integration of norms, particularly in comparison with any BDI agent that does not integrate norms. However, as a future work, these concepts-- specially follow/violate-- should be encoded in a more expressive and transparent manner. This can be done, for example, by utilizing declarative constructs such as preferences on the language level (see \cite{Mohajeriparizi2022Preference}) to have an explicit, yet programmable way of ordering between intentional (e.g. desires, goals) and normative (e.g. obligations) dimensions of the agent.

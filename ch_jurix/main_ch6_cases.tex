@@ -3,19 +3,19 @@
 This chapter illustrates an example model built utilizing the ASC2 framework and its extensions with normative advisors. This example was chosen intentionally to be maximally different from what have been presented until this point in the thesis to elaborate on the diverse applications of the approach. The example case presented in Section~\ref{sec:ihl_model} is based on a formal model of the system controlling the International Humanitarian Law (IHL) compliance for autonomous military devices in which ASC2 is utilized as an experimental test and verification method.% The second example case presented in Section~\ref{sec:notary_model}, is based on the proposal of a generic architecture of regulated software systems that facilitates compliance with high-level policies through regulatory services. In this use-case, eFLINT is used to model the governing regulations and ASC2 is utilized as a pre-development demonstration tool to implement a prototype of the proposed architecture that is governed by these regulations in order to find better insight into the architecture.
 
 
-\section{IHL-Compliant Military Devices}
+\section{Introduction}
 Development and utilization of autonomous military devices, fully or partially controlled by artificial intelligence is a controversial idea, loaded with moral, legal, and ethical issues, which thesis does not try to address. However, what this example case aims at, is to study the extend AI systems can operate within applicable legal constraints. What makes International Humanitarian Law an interesting case is the existing research debate in which some argue that incorporating many principles of IHL, such as distinction, proportionality, and precautions, into an AI is impossible~\cite{115CrootofRcrdz,120Szpak} while some commentators point out that not only it is possible, but it may be a desirable approach as a well-functioning military AI can possibly provide better performance and increased respect for the law \cite{119DoDaiprinc,119NeyPCIslKeynt}.
 
-This section is a summary and extension\footnote{Focused more on the modelling approach rather than the system and laws being modelled.} of the work presented in~\cite{zurek2022jurix}, a formal encoding of IHL rules and their implementation with the use of ASC2 and eFLINT/Prolog languages is introduced. The general structure and model of a decision-making mechanism for an IHL-compliant military autonomous devices that the models in this section are based on were first introduced in~\cite{zurek-coine22}.
+This chapter is a summary and extension\footnote{Focused more on the modelling approach rather than the system and laws being modelled.} of the work presented in~\cite{zurek2022jurix}, a formal encoding of IHL rules and their implementation with the use of ASC2 and eFLINT/Prolog languages is introduced. The general structure and model of a decision-making mechanism for an IHL-compliant military autonomous devices that the models in this chapter are based on were first introduced in~\cite{zurek-coine22}.
 
-\subsection{International Humanitarian Law rules}
+\section{International Humanitarian Law rules}
 \label{sec:ihl_model}
 International humanitarian law is the set of rules governing to all military operations, including weapons release \cite{113Fleck}. 
 %Attack decisions and weapons systems that do not comply with IHL principles are unlawful and may even entail the decision-maker’s criminal liability for any harm that results \cite{APIz}. 
 These principles include guaranteeing that the weapon is sufficiently accurate so as to not be indiscriminate, that attacks are proportionate, and all necessary precautions are taken to spare the civilian population. Such legal requirements must be complied with even if some or all of these decisions are delegated to autonomous devices, and commanders envisaging the use of such devices must ensure that these systems can perform all the required legal tests correctly \cite{119BoothbyWEd}.
 
 Main IHL principles studied in this section are related to targeting and weaponeering, which are implemented through a series of legal tests during the targeting process \cite{118DucheinePEtg,120HeineggWInkl,114CornGS}. The authors of \cite{zurek-coine22} structured and streamlined these legal tests for implementation by a hypothetical  military autonomous device. In~\cite{zurek2022jurix}, the discussion is limited to the implementation of tests which are commonly described as the most difficult tasks for an artificial agent to perform, namely those which involve the incidental harm (IH) and military advantage (MA) variables~\cite{119BoothbyWEd}. The tests in question are the \textit{proportionality rule} and the two \textit{civilian harm minimisation rules},\footnote{Articles 57(2)(a)(iii), 57(2)(a)(ii) and 57(3) of \cite{APIz} respectively.}.% which are explained in greater detail below in Section \ref{sec:The model}. As such, in the hypothetical scenario we present in Section~\ref{sec:Scenario}, we make the assumption that all other relevant legal considerations (e.g. prediction accuracy, compliance to weapons treaties, military necessity) are unproblematic. The integration of all these tests into a single system we reserve for future work.
-\subsection{The Model}
+\section{The Model}
 
 The basis of the model is in the analysis of various relations between MA and IH which respectively are expressed by two values: $v_{MA}$ representing Military Advantage and $v_{CIV}$ representing civilian well-being. For better expressivity, the value $v_{CIV}$ is used which is inversely proportional to IH, $v_{CIV} = 1/v_{IH}$.
 % Note that the role of values in our model is different compared to many argumentation and reasoning models: they are not tied to arguments and they are not used to resolve conflicts, but they function as reasons of decisions. Moreover, unlike in many models (e.g. \cite{bench-capon2003}), they are not binary, but can be satisfied to a certain level.
@@ -129,7 +129,7 @@ DT(d_x) \wedge DP(d_x) \wedge DMH(d_x) \Rightarrow DAV(d_x)
 %        $DAV = \{d_x | DAV(d_x)\}$
 
 
-\subsection{Decision-making}
+\section{Decision-making}
 The decision-making of the military device can be any arbitrary mechanism as long as the final decision $d_x$ passes all the tests meaning we have $DAV(d_x)$.  For example, the decision-making mechanism can choose, from the set of available decisions which fulfil IHL rules, the one which brings about the highest military advantage. 
 %A brief description of the mechanism is presented in Section \ref{sec:intionalagents} \footnote{an experimental implementation is publicly available:}. 
 Let $Decisions = (D, \geq)$ be a total ordered set representing ranking of decisions. The basis of this ordering is military advantage, assuming that commanders would prefer decisions which provide the greatest expected military utility from all lawful alternatives:
@@ -145,7 +145,7 @@ The system, on the basis of ordering $Decisions$ can choose the best decision (t
 
 
 
-\subsection{Scenario}
+\section{Scenario}
 \label{sec:Scenario}
 Below we present a scenario on the basis of which we are going to test our mechanism:
 
@@ -153,7 +153,7 @@ Below we present a scenario on the basis of which we are going to test our mecha
     A commander from nation Alpha is given the task to capture a city defended by nation Beta, which uses the city’s smart sensors to collect data of Alpha’s troop movements and plan effective counterattacks. For each district, data is collected at a data center before being sent through relay stations to Beta’s headquarters. Aiming to disrupt Beta’s intelligence network, Alpha’s commander releases \textit{Cleopatra} drones which are given the task to locate the data centers or relay stations (‘network points’) and destroy one of them, which would disable the data flow in that district. Network points can be located inside civilian buildings, on rooftops or in fields. The drones are able to identify civilians and enemy soldiers around potential target locations and take this information into consideration for their decision-making. \textit{Cleopatras} carry two types of ammunition, ‘light’ and ‘heavy’ missiles. Heavy missiles are necessary for attacking targets inside buildings, but cause more damage to their surroundings. The risk of misidentification or released missiles missing the target is negligible. %\textit{Cleopatras} do not violate any IHL or weapons treaties to which Alpha is Party.
 \end{quote}
 
-On the basis of the above scenario we assume that a particular drone in a given situation can make a decision concerning destroying one of the network points namely relay stations (RelSta) or data-centers (DCenter), with one of two different kinds of missiles (heavy and light), giving \textit{2n} possible decisions to examine. In order to examine the mechanism, we assumed four sub-scenarios with different collateral effects that can be predicted by the device (see Table \ref{table:1}). Each table presents a different district (A, B, C, and D) where each row presents a different attack decision. Each decision apart from the target and missile type, shows the location which is relevant as only heavy missiles are effective against buildings. The number of enemy soldiers neutralized as a side-effect of the attack is illustrated in the `Sldrs', the number of collateral civilian lives and buildings are also presented in the columns `Civ blds' and `Civ lives'. The corresponding $v_{MA}$ and $v_{CIV}$ values are calculated based on these parameters. The military advantage of all targets (network devices) is the same given the missile type is viable in that location. However, there is a variation of $v_{MA}$ in each row based on the number of enemy soldiers. The $v_{CIV}$ value is based on the number of civilian buildings and lives. Both values are also affected by a random modifier and rounding in each decision.
+On the basis of the above scenario we assume that a particular drone in a given situation can make a decision concerning destroying one of the network points namely relay stations (RelSta) or data-centers (DCenter), with one of two different kinds of missiles (heavy and light), giving \textit{2n} possible decisions to examine. In order to examine the mechanism, we assumed four sub-scenarios with different collateral effects that can be predicted by the device (see Table \ref{table:1}). Each table presents a different district (A, B, C, and D) where each row presents a different attack decision. Each decision apart from the target and missile type, shows the location which is relevant as only heavy missiles are effective against buildings. The number of enemy soldiers neutralized as a side-effect of the attack is illustrated in the `Sldrs', the number of collateral civilian lives and buildings are also presented in the columns `CL' and `CB'. The corresponding $v_{MA}$ and $v_{CIV}$ values are calculated based on these parameters. The military advantage of all targets (network devices) is the same given the missile type is viable in that location. However, there is a variation of $v_{MA}$ in each row based on the number of enemy soldiers. The $v_{CIV}$ value is based on the number of civilian buildings and lives. Both values are also affected by a random modifier and rounding in each decision.
 
 The full analysis of the operations in each district is presented later on, but in summary to rationalize four different scenarios, \textbf{District A} is a generic scenario where there are not a lot of civilians, however, only one option is legal. In \textbf{District B}, there are many civilians around and all options will result in high collateral damages. In \textbf{District C}, an extremely high-value target is present (Beta's president, indicated by `P') which can be neutralized with a heavy missile at the cost of many civilian casualties. Finally in \textbf{District D}, like \textbf{A}, there are not many civilians around, but more than one option is legal so it will be agent's decision-making that needs to select one.
 
@@ -168,7 +168,7 @@ The full analysis of the operations in each district is presented later on, but 
 \label{table:1}
 \begin{tabular}{|l|l|l|l|l|l|l|l|l|l|} 
 \hline
-District & Dcsn & Target & Location & Sldrs & Msl type &  Civ blds & Civ lives & $v_{MA}$ & $v_{CIV}$ \\ [0.5ex] 
+District & Dcsn & Target & Location & Sldrs & Msl type &  CB & CL & $v_{MA}$ & $v_{CIV}$ \\ [0.5ex] 
 \hline
 A & 1 & RelSta1 & roof & 0 & heavy & 1 & 6 & 0.5 & 0.4 \\
 A & 2 & RelSta1 &  roof& 0 & light & 1 & 2 & 0.5 & 0.6 \\
@@ -278,7 +278,7 @@ D & 6 & DCenter & building & 5 & light & 1 & 4 & 0.05 & 0.5 \\
 
 %In this work, the AgentScript BDI framework is used to implement both intentional agents and normative advisors. 
 %
-\subsection{Implementation}
+\section{Implementation}
 This section presents the basics of the implementation of the experiment. The proof of concept is implemented with the approach presented in~\ref{ch:normative_advisors} with two components: (1) an intentional agent that encapsulates the objectives and procedural knowledge that is implemented utilizing ASC2 framework and (2) a normative advisor that encompasses the the normative aspects. Using intentional agents and normative advisors is advantageous in this case because of the separation of the analysis of legality of the decision from making the decision itself. Such a separation is important because it preserves the required level of transparency concerning the IHL compliance: in particular, it allows for clear understanding why a given decision fulfills a particular IHL rule. %Since the main goal of our work is to discuss the experiments concerning the recognition whether a given decision option fulfills IHL requirements (i.e. if it is lawful an IHL perspective), we will focus on a particular element of a normative advisor (component 2), i.e. the normative reasoner, which is responsible for performing the legal tests.
 
 The IHL rules in normative advisors are implemented twice with two languages, once with eFLINT and once with Prolog. The choice to use Prolog was taken in the process of implementation, because it turned out that eFLINT's current version is not optimized for this specific encoding which resulted in low performance. However, as the rules are already encoded in logical form, Prolog is an intuitive choice. This extra step is explicitly presented in this chapter to illustrate the versatility and modularity of the normative advisors and how they are agnostic towards specific the norms framework.
@@ -355,7 +355,7 @@ target(D1) >> target(D2) :- evma(D1,V1) && evma(D2,V2) && V1 > V2.
 \end{listing}
 
 
-\subsubsection{Drone (Intentional) Agent}
+\subsection{Drone (Intentional) Agent}
 The drone's intentional agent's script implementation as a BDI agent can be seen in Listing~\ref{lst:device}. The drone has one inference rule (line 2) specifying a target is \asc{viable} if it passes IHL rules defined by predicate \asc{pass_ihl_rules}. The agent itself does not define when a decision passes IHL rules, which keeps it agnostic towards specific rules; instead, this information is fed to it by the advisor. Next, there are two preference statements encoded in CP-Nets that are an encoding of formula~\ref{formula:decision}. These preference are used to make decisions between targets stating that agent will prefer targets with higher \asc{evma} (lines 4-6). The first statements specifies that when agent is engaging a viable target, ``it prefers to engage a more preferred target'', this is an example of nested preferences introduced in Chapter~\ref{ch:preferences}. The second statement defines that a target with higher \asc{evma} is preferred with no context. Also note that the preference statements do not need to take into account the IHL rules, making them far more modular. 
 
 The plans P1 and P2 are the main plans for external events, P1 can be used to respond to the event of achieving \asc{engage}, meaning engage \textit{some} target without specifying any specific one that when committed will simply adopt a abstract sub-goal of \asc{!engage_target(D)} where the parameter \asc{D} is a free variable; note that this is an example of an abstract goal from Chapter~\ref{ch:preferences} that will be grounded later on. Plan P2 matches with the event \asc{engage_target(D)} where \asc{D} can be either a free variable or a grounded one which will make it a concrete goal; the body of P2 simply has a sub-goal of \asc{!engage_viable_target(D)}.
@@ -367,7 +367,7 @@ The last two plans are simple information relay plans that allow the agent to se
 
 
 
-\subsubsection{eFLINT Powered Normative Advisor}
+\subsection{eFLINT Powered Normative Advisor}
 
 \paragraph{IHL in eFLIT}
 Listing~\ref{listing:eflint:ihl} shows the excerpt of an eFLINT specification for our running example. This specification shows only a small subset of what eFLINT can encode. The script instead defines multiple types of facts, some atomic ones like \asc{target} and \asc{vma}, some composite ones like \asc{outcome} and the rest are \textit{derived} facts. Some examples are: In line 5 the fact \asc{evciv(target,value)} which derives the expected value of civilian well-being for a target from all the possible outcomes of that target. In line 11 the fact \asc{proportionate(target)} which is derived from the proportionality formula (Definition~\ref{formula:proportionalityTest}). Fact \asc{dp(target)} in line 18 defines proportionality test (Definition~\ref{formula:dp}), fact \asc{dt(target)} in line 21 defines Article 57(3) test (Definition~\ref{formula:dt}), fact \asc{dmh(target)} defines the harm minimization test (Definition~\ref{formula:dmh}), and finally in line 29, fact \asc{dav(target)} holds when four facts \asc{dp}, \asc{dt}, \asc{dmh}, and, \asc{dtr} holds for that target (Definition~\ref{formula:dav}). Note that eFLINT by design includes a transition system that on every update proactively searches for all the possible facts (or acts, or duties) that can be derived and creates them and then as it will be shown in the following they are reported to the advisor agent.
@@ -428,7 +428,7 @@ Fact dav Identified by target
 \end{listing}
 
 \paragraph{Advisor in ASC2}
-The advisor script for IHL rules implemented in eFLINT (Listing can be seen in Listing~\ref{lst:advisor:ihl}, the first six plans (lines 1-8) can be utilized to communicate with the norms instance within the agent to check if an act is enabled, to perform an act, or to check if a fact holds true. Although these are enough for the intentional part of the device to check if a target passes all the tests (e.g., by querying \asc{?holds(dav(D))}, we will take a more proactive approach. The last 4 plans (lines 10-13) illustrate this, they are plans that tell the normative advisor to report specific updates within the normative state of the environment back to the device, namely assertion and retraction of facts \asc{dav} and \asc{evma}. Furthermore, the plans in lines 10 and 11 also have an extra qualification step relaying that the fact \asc{dav} \textit{counts as} the fact \asc{pass_ihl_rules}. This allows for modular design as the intentional part of the device does not need know the specific rules in IHL, meaning even if IHL rules are changed, only this qualification rule needs to be updated and not the intentional agent.
+The normative advisor agent script specialized for IHL rules implemented in eFLINT (Listing~\ref{listing:eflint:ihl}) is illustrated in Listing~\ref{lst:advisor:ihl}, the first six plans (lines 1-8) can be utilized to communicate with the eFLINT instance within the agent to check if an act is enabled, to perform an act, or to check if a fact holds true. Although these are enough for the intentional part of the device to check if a target passes all the tests -- e.g., by querying \asc{?holds(dav(D))}--, we will take a more proactive approach. The last 4 plans (lines 10-13) illustrate this, they are plans that tell the normative advisor to report specific updates within the normative state of the environment back to the device, namely assertion and retraction of facts \asc{dav} and \asc{evma}. Furthermore, the plans in lines 10 and 11 also have an extra qualification step relaying that the fact \asc{dav} \textit{counts as} the fact \asc{pass_ihl_rules}. This allows for modular design as the intentional part of the device does not need know the specific rules in IHL, meaning even if IHL rules are changed, only this qualification rule needs to be updated and not the intentional agent.
 
 \begin{listing}[!thb]
 \centering
@@ -502,12 +502,12 @@ dav(D) :- dt(D) && dp(D) && dmh(D).
 +!update_dav(D) : not dav(D) =>
     #coms.untell("IHLDevice",pass_ihl_rules(D)).
 \end{minted}
-\caption{ASC2 implementation of IHL Prolog Powered Advisors}
+\caption{ASC2 implementation of IHL in Prolog Powered Advisors}
 \label{lst:advisor:asc2:ihl}
 \end{listing}
 
 
-\subsubsection{Pure ASC2 Advisor}
+\subsection{Pure ASC2 Advisor}
 The alternative approach to create the IHL advisor is to use pure ASC2 script which is illustrated partially in Listing~\ref{lst:advisor:asc2:ihl}. This is possible because ASC2 agents already have an internal Prolog engine embedded in them. Alike to the eFLINT specification, lines 6, 13, 15, 21, and 25 respectively represent proportionality formula (Definition~\ref{formula:proportionalityTest}), proportionality test (Definition~\ref{formula:dp}), Article 57(3) test (Definition~\ref{formula:dt}), harm minimization test (Definition~\ref{formula:dmh}), and finally, overall passing of all other tests (Definition~\ref{formula:dav}). The main difference from the eFLINT implementation is that unlike before, Prolog fact are  not proactively analyzed and queries should be triggered externally, in this case the advisor agent has two plans (lines 28 and 32) that when an outcome for a target (decision) is asserted or retracted. As a result, the agent will then adopt two goals to firstly update the intentional agent about newly \asc{evciv} and \asc{evma} values for that target (lines 36-40), and then also determine if this target passes all the tests (or not) simply by checking if the query \asc{dav(D)} holds (or not) according to its belief base, and relay the result to the intentional agent (lines 42-43 and lines 45-46).
 
 
@@ -606,7 +606,8 @@ The alternative approach to create the IHL advisor is to use pure ASC2 script wh
 %
 %Now let us consider when the agent adopts the goal \asc{engage()}, subsequently it will adopt \asc{engage_target(D)} where \asc{D} is a free variable, next when \asc{engage_viable_target(D)} is adopted, the agent's reasoning engine will run the context condition of P3, \asc{viable(D)} against its belief base which results in the substitution of \asc{D/RelSta1_light} and when executed, again the drone will attack the target. This shows how the agent can be both compliant to rules and also make decisions that are compliant to rules.
 %
-\subsection{Discussion}
+\section{Discussion}
+\textcolor{red}{COMPLETE REWRITE NEEDED}
 
 %Next, we will analyze the scenarios illustrated in Section \ref{sec:Scenario}. 
 In the experiment, the list of available decisions with their evaluations is sent to the intentional agent in a sequence. After the last decision is sent, the system inspects the norms instance embedded in the advisor to see which facts are present. In the example, each decision is identified by the target name (e.g., RelSta1) and the missile type (e.g., heavy) and where needed resulting in identifiers like \asc{RelSta1_heavy}. The results of the IHL compliance analysis are presented in Table~\ref{table:r1}. 
@@ -693,9 +694,3 @@ In practice, obtaining $v_{MA}$ and $v_{CIV}$ can be seen as a classification or
 % Before we discuss all the necessary legal weightings, we have to point out that since the term ``value'' means something positive, instead of using IH, we use the value CIV which is inversely proportional to IH and which represents the general well-being of civilians. We assume that: $v_{CIV} = 1/v_{IH}$.
 
 % The three tests mentioned above require four kinds of weighting between $v_{MA}$ and $v_{CIV}$\footnote{Note that we use expected levels of satisfaction of values instead of absolute ones.}:
-
-
-
-
-\section{notary}
-\label{sec:notary_model}
