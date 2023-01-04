@@ -165,6 +165,9 @@ To complete our Compile/Test process, in addition to the \textit{ScalaTest} libr
 \begin{listing}[!tb]
 
 \centering
+\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt,arc=0pt,
+                  boxrule=0pt,toprule=1pt,
+                  colback=white]
 \begin{minted}[linenos]{prolog}
 +!init(W) : W > 1 =>
     Nbr = "worker" + 
@@ -177,10 +180,10 @@ To complete our Compile/Test process, in addition to the \textit{ScalaTest} libr
 +!token(N) : neighbor(Nbr) =>
     #coms.achieve(Nbr, token(N - 1)).
 \end{minted}
-\vspace{-5pt}
+\end{tcolorbox}
     \caption{Token ring \texttt{worker} script in AgentScript DSL}
     \label{lst:script_1}
-\vspace{-5pt}
+
 \end{listing}
 
 \section{Illustrative Example}
@@ -212,7 +215,10 @@ By viewing the script in listing \ref{lst:script_1}, we can see that the agent h
 
 \begin{listing}[!tb]
 \centering
-\begin{minted}[linenos]{scala}
+\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt,arc=0pt,
+                  boxrule=0pt,toprule=1pt,
+                  colback=white]
+\begin{minted}[fontsize=\small,linenos]{scala}
 class TokenRingWorkerSpec extends ... {
 
   val mas = new MAS()
@@ -247,10 +253,9 @@ class TokenRingWorkerSpec extends ... {
   }
 }
 \end{minted}
-\vspace{-5pt}
+\end{tcolorbox}
     \caption{Test suite for the \texttt{worker} agent}
     \label{lst:test_1}
-\vspace{-5pt}
 \end{listing}
 
 The test specification we used for the worker agent can be seen in listing \ref{lst:test_1}. In line 3 an empty MAS object is created. The criterion of success for \texttt{init(W)} plan depends on the agent's beliefs, therefore we need to be able to verify the internal state of agent's belief base. First we create an instance of \texttt{BeliefBase} class (line 4) and when the agent under test (\texttt{worker1}) is being instantiated (line 10), this object is injected in the agent as its belief base; with this approach at any point in the tests we can simply access the agent's beliefs to query them for verification purposes or even modify the agent's belief base for setting up test scenario states.

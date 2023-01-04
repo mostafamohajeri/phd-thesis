@@ -1,7 +1,7 @@
 \chapter{Transparent Decisions in Social Actors: Preferences}
 \label{ch:preferences}
 Computational agents based on the BDI framework typically rely on abstract plans and plan refinement to reach a degree of autonomy in dynamic environments: agents are provided with the 
-ability to select \textit{how-to} achieve their goals by choosing from a set of options. In this work we focus on a related, yet under-studied feature: \textit{abstract goals}. These constructs refer to the ability of agents to adopt goals that are not fully grounded at the moment of invocation, refining them only when and where needed: the ability to select \textit{what-to} (concretely) achieve at run-time. We present a preference-based approach to goal refinement,  defining preferences based on extended \textit{Ceteris Paribus} Networks (CP-Nets) for an AgentSpeak(L)-like agent programming language, and mapping the established CP-Nets logic and algorithms to guide the goal refinement step. As a technical contribution, we present an implementation of this method that solely uses a Prolog-like inference engine of the agent's belief-base to reason about preferences, thus minimally affecting the decision-making mechanisms hard-coded in the agent framework.
+ability to select \textit{how-to} achieve their goals by choosing from a set of options. In this work we focus on a related, yet under-studied feature: \textit{abstract goals}. These constructs refer to the ability of agents to adopt goals that are not fully grounded at the moment of invocation, refining them only when and where needed: the ability to select \textit{what-to} (concretely) achieve at run-time. We present a preference-based approach to goal refinement,  defining preferences based on extended \textit{Ceteris Paribus} Networks (CP-Nets) for an AgentSpeak(L)-like agent programming language, and mapping the established CP-Nets logic and algorithms to guide the goal refinement step. As a technical contribution, we present an implementation of this method that solely uses a Prolog-like inference engine of the agent's belief-base to reason about preferences, thus minimally affecting the decision-making mechanisms hard-coded in the agent framework. The aim of this chapter is to (1) introduce a generic approach for embedding explicit preferences into BDI agents, and (2) to provide a proof-of-concept implementation of this approach in ASC2. 
 
 
 \section{Introduction}
@@ -173,7 +173,10 @@ Imagine again the domestic robot from the previous chapter, an agent that upon r
 The agent has two plans for going to a restaurant and ordering a meal: the first plan (P1) is \textit{applicable} if the agent is not at a restaurant at the moment, which means a step of moving (\asc{#move_to} primitive action) is needed prior to ordering the meal; the second plan (P2) is applicable if the agent is already at the restaurant which means the agent will just adopt the goal of ordering the meal. There is also one plan for ordering the meal (P3) which is applicable if the agent has the belief that the meal it wants to order exists.
 \begin{listing}[t]
 \centering
-\begin{minted}[fontsize=\small]{prolog}
+\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt,arc=0pt,
+                  boxrule=0pt,toprule=1pt,
+                  colback=white]
+\begin{minted}[fontsize=\small,linenos]{prolog}
 
 % (P1) 
 +!go_order(Loc,Meal) :
@@ -189,8 +192,10 @@ The agent has two plans for going to a restaurant and ordering a meal: the first
     meal(S,M,W) => 
         #ask_waiter(meal(S,M,W)).
 \end{minted}
+    \end{tcolorbox}
     \caption{Reactive Plans of Food-ordering Agent}
     \label{lst:script_1}
+
 \end{listing}%
 \noindent Suppose the agent selects an event with the trigger: 
 \begin{minted}[fontsize=\small]{prolog}
@@ -219,17 +224,22 @@ can indeed handle abstract events, referring to situations where an event contai
 \subsubsection*{Example 2}
 Consider the same agent presented in listing \ref{lst:script_1}. This time we assume the agent has more information about the environment: it has beliefs about two types of soups, two types of main course, two types of wine, two restaurants, also it believes that it is standing already in one of the restaurants (the \texttt{french} one), and finally it has an inferential rule for which all possible triple of soup, main course and wine form  a meal combination. Those beliefs are presented as in listing~\ref{lst:beliefs_1}.
 
-\begin{listing}[t]
+\begin{listing}[!htb]
 \centering
-\begin{minted}[fontsize=\small]{prolog}
+\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt,arc=0pt,
+                  boxrule=0pt,toprule=1pt,
+                  colback=white]
+\begin{minted}[fontsize=\small,linenos]{prolog}
 main(fish). main(meat). soup(veg). soup(fish).
 wine(white). wine(red).
 restaurant(french). restaurant(italian).
 at(french).
 meal(S,M,W) :- soup(S), main(M), wine(W).
 \end{minted}
+\end{tcolorbox}
     \caption{Beliefs of Food-ordering Agent}
     \label{lst:beliefs_1}
+
 \end{listing}
 
 
@@ -345,7 +355,10 @@ We define at this point a few preferences about the restaurant: (R8) if the agen
 
 \begin{listing}[t]
 \centering
-\begin{minted}[fontsize=\footnotesize]{prolog}
+\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt,arc=0pt,
+                  boxrule=0pt,toprule=1pt,
+                  colback=white]
+\begin{minted}[fontsize=\footnotesize,linenos]{prolog}
 (R1) meal(S,meat,W) >> meal(S,fish,W) :- at(italian).
 (R2) meal(S,fish,W) >> meal(S,meat,W) :- at(french).
 (R3) meal(fish,meat,W) >> meal(veg,meat,W) :- true.
@@ -357,8 +370,10 @@ We define at this point a few preferences about the restaurant: (R8) if the agen
 (R9) !go_order(italian, meal(S,meat,W)) 
      >> !go_eat(L,meal(S,_,W)) :-  not at(L).
 \end{minted}
+\end{tcolorbox}
     \caption{Preferences of Food-ordering agent}
     \label{lst:prefs_1}
+
 \end{listing}
 
 We can draw as in Figure~\ref{fig:cp-graph} the preferential relation graph associated to the predicate \asc{meal/3} with respect to preferences in listing \ref{lst:prefs_1} and the beliefs in listing \ref{lst:beliefs_1}. The graph clearly suggests that, in this context, \asc{meal(veg,fish,red)} is the most preferred (undominated) option. Note however that this graph would have been different if the agent had the belief \asc{at(italian)} instead of \asc{at(french)}. %which intuitively means the agent has different preferences about meals in different restaurants. 
@@ -476,7 +491,7 @@ To write full contextually conditioned statements as $G1 \succ G2 \leftarrow C$,
 \begin{equation*}
 applicable(t,G1) \succ applicable(t,G2) \leftarrow C
 \end{equation*}
-where $t$ is a predefined atom describing the type of the event, e.g: the preference statement R8 in listing \ref{lst:prefs_1} will be rewitten as:
+where $t$ is a predefined atom describing the type of the event, e.g: the preference statement R8 in listing \ref{lst:prefs_1} will be rewritten as:
 \begin{minted}[fontsize=\small]{prolog}
 applicable(achievement,go_order(L,_)) 
     >> applicable(achievement,go_order(_,_)) 
@@ -489,13 +504,19 @@ Next, the algorithm should be implemented for finding an optimal outcome, that i
 
 Looking at the definition \ref{def:mpu}, given a set of preference statements as Prolog rules in a belief base $B$, to prove that a unifier $(\sigma\delta)$ is the most preferred unifier for a partially unbound term (or event) $\epsilon$, it is sufficient to prove that for every other unifier $(\sigma\delta)'$ of that term, the relation $\epsilon(\sigma\delta)' \succ \epsilon(\sigma\delta)$ is not a logical consequence of $B$. Intuitively with the semantics of Prolog, this means that this relation could not be concluded from any of the preference statements of $B$. With this, a simple algorithm that can find the most preferred (or undominated) unifier(s) for a partially unbound term is a backtracking search that goes through every possible (partial) grounding of that term to find one where there is no other (partial) grounding of that term which is more preferred to it. Such algorithm can be implemented by adding the Prolog rule presented in Listing~\ref{lst:pref_alg} to the agent's belief base. The \asc{copy_term/2} is a standard predicate in many Prolog implementations that unifies \asc{G2} with a copy of \asc{G} in which all variables are replaced by new variables. 
 \begin{listing}[!ht]
-\begin{minted}[fontsize=\small]{prolog}
+\centering
+\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt,arc=0pt,
+                  boxrule=0pt,toprule=1pt,
+                  colback=white]
+\begin{minted}[fontsize=\small,linenos]{prolog}
 most_preferred(G) :- 
     copy_term(G, G2), G, 
     forall((G2, (G2 >> G) -> fail; true)).
 \end{minted}
+\end{tcolorbox}
 \caption{CP-Net reasoning algorithm implemented in Prolog}
 \label{lst:pref_alg}
+
 \end{listing}
 
 % have been replaced by brand new variables, and all mutables by brand new mutables''. 

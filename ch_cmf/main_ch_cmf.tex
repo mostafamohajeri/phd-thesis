@@ -86,7 +86,9 @@ To implement the norms, we first start with a drastically simplified of the gene
 % Fact reference
 \begin{listing}[t]
 \centering
-\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt]
+\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt,arc=0pt,
+                  boxrule=0pt,toprule=1pt,
+                  colback=white]
 \begin{minted}[fontsize=\footnotesize,linenos]{haskell}
 Act send_data
   Actor source Recipient target
@@ -120,7 +122,9 @@ Listing~\ref{listing:eflint:dmp-bob} illustrates Bob's specialized contract. Lin
 
 \begin{listing}[th]
 \centering
-\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt]
+\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt,arc=0pt,
+                  boxrule=0pt,toprule=1pt,
+                  colback=white]
 \begin{minted}[fontsize=\footnotesize,linenos]{haskell}
 #require "data_sharing_basics.eflint".
 
@@ -142,7 +146,9 @@ Similar to Bob, David also has a simple extension to its contract specification 
 
 \begin{listing}[h]
 \centering
-\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt]
+\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt,arc=0pt,
+                  boxrule=0pt,toprule=1pt,
+                  colback=white]
 \begin{minted}[fontsize=\footnotesize,linenos]{haskell}
 Extend Event init_contract
   Creates  
@@ -159,7 +165,9 @@ Next is Charlie, with the role to get an algorithm and a data set from two other
 
 \begin{listing}[h]
 \centering
-\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt]
+\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt,arc=0pt,
+                  boxrule=0pt,toprule=1pt,
+                  colback=white]
 \begin{minted}[fontsize=\footnotesize,linenos]{haskell}
 Extend Act send_data
   Holds when source == "C" && target == "A" && data == "result1".
@@ -197,7 +205,9 @@ Finally, Listing~\ref{listing:eflint:dmp-alice} shows an excerpt of Alice's cont
 
 \begin{listing}[h]
 \centering
-\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt]
+\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt,arc=0pt,
+                  boxrule=0pt,toprule=1pt,
+                  colback=white]
 \begin{minted}[fontsize=\footnotesize,linenos]{haskell}
 Extend Act send_data ...
 Extend Duty to_send_data ...
@@ -229,6 +239,9 @@ To fully implement the model of the DMP, after defining the contract specificati
 Listing~\ref{listing:advisor:dmp} illustrates parts of the ASC2 script for the DMP advisors agent\footnote{More generic parts that have been already presented in Listing~\ref{listing:advisor} are omitted.}. The two plans that are triggered when a duty \asc{to_send_data} is created or terminated in the embedded eFLINT reasoner. The advisor then simply relays this update to its parent which is a participant agent in the DMP.
 
 \begin{listing}[!tbh]
+\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt,arc=0pt,
+                  boxrule=0pt,toprule=1pt,
+                  colback=white]
 \begin{minted}[fontsize=\small,linenos]{prolog}
 +to_send_data(party(S),party(T),data(D)) =>
     #tell(Parent,send_data(S,T,D)).
@@ -236,6 +249,7 @@ Listing~\ref{listing:advisor:dmp} illustrates parts of the ASC2 script for the D
 -to_send_data(party(S),party(T),data(D)) =>
     #untell(Parent,send_data(S,T,D)).
 \end{minted}
+\end{tcolorbox}
 \caption{ASC2 specification of DMP participant's norm advisor.}
 \label{asc:advisor}
 \label{listing:advisor:dmp}
@@ -244,6 +258,10 @@ Listing~\ref{listing:advisor:dmp} illustrates parts of the ASC2 script for the D
 For a final piece of the model, Listing~\ref{listing:asc2:dmp} illustrates the script for participant agents that act in the DMP. The first plan (Line 1) is for initiation of the contract which simply informs advisor about this event. There are two plans for actual data/algorithm level communications between agents; one for sending a data package (Line 3) and another for receiving a package (Line 7). In both cases the agent also informs the advisor about this. The next three plans are triggered by the advisor: to inform the agent it has a duty to send some data package to a target (Line 10), to inform the agent it should expect to observe a transfer of data, and to inform the agent that a duty to send data has been terminated due to some observed event.
 
 \begin{listing}[!tbh]
+\centering
+\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt,arc=0pt,
+                  boxrule=0pt,toprule=1pt,
+                  colback=white]
 \begin{minted}[fontsize=\small,linenos]{prolog}
 +!init(Advisor) => !inform_advisor(event,init_contract).
 
@@ -264,6 +282,7 @@ For a final piece of the model, Listing~\ref{listing:asc2:dmp} illustrates the s
 -send_data(S,T,D) =>
     #println("Duty terminated: " + send_data(S,T,D)).
 \end{minted}
+\end{tcolorbox}
 \caption{ASC2 specification of a DMP participant}
 
 \label{listing:asc2:dmp}

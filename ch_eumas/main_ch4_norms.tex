@@ -186,8 +186,10 @@ The transitions may output violations if an action triggered a transition with u
   \centering
 \begin{minipage}{1\textwidth}
   \centering
-\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt]
-\begin{minted}[fontsize=\footnotesize]{haskell}
+\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt,arc=0pt,
+                  boxrule=0pt,toprule=1pt,
+                  colback=white]
+\begin{minted}[fontsize=\footnotesize,linenos]{haskell}
 // fact definitions
 Fact buyer 
 Fact seller
@@ -494,7 +496,7 @@ All changes to facts' truth-assignment, normative positions and violations regis
 %
 \label{sec:scenario}
 \begin{listing}[t]
-\begin{minted}[fontsize=\small]{prolog}
+\begin{minted}[fontsize=\small,linenos]{prolog}
 +?permitted(A) : enabled(A) => #respond(true).
 +?permitted(A) => #respond(false).
 
@@ -642,8 +644,10 @@ Listing~\ref{listing:transaction} shows for instance how a transaction event in 
 
 \begin{listing}[t]
 \centering
-\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt]
-\begin{minted}[fontsize=\small]{haskell}
+\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt,arc=0pt,
+                  boxrule=0pt,toprule=1pt,
+                  colback=white]
+\begin{minted}[fontsize=\small,linenos]{haskell}
 Fact account
 Placeholder sender    For account
 Placeholder receiver  For account

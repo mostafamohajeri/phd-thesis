@@ -316,14 +316,18 @@ The IHL rules in normative advisors are implemented twice with two languages, on
 
 \begin{listing}
 \centering
-\begin{minted}[fontsize=\footnotesize,linenos]{prolog}
+\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt,arc=0pt,
+                  boxrule=0pt,toprule=1pt,
+                  colback=white]
+\begin{minted}[fontsize=\small,linenos]{prolog}
 % Beliefs, Rules
 viable(D) :- pass_ihl_rules(D).
 
 % Preferences
 +!engage_viable_target(D1) >> +!engage_viable_target(D2) :-
     target(D1) >> target(D2).
-target(D1) >> target(D2) :- evma(D1,V1) && evma(D2,V2) && V1 > V2.
+target(D1) >> target(D2) :- 
+    evma(D1,V1) && evma(D2,V2) && V1 > V2.
 
 % Plans
 % P1
@@ -350,6 +354,7 @@ target(D1) >> target(D2) :- evma(D1,V1) && evma(D2,V2) && V1 > V2.
 +data(Fact) => #tell("IHLAdvisor", Fact).
 -data(Fact) => #untell("IHLAdvisor", Fact).
 \end{minted}
+\end{tcolorbox}
 \caption{ASC2 implementation of IHL compliant device}
 \label{lst:device}
 \end{listing}
@@ -388,8 +393,10 @@ Listing~\ref{listing:eflint:ihl} shows the excerpt of an eFLINT specification fo
 % Fact morerel Identified by target * other-target Holds when ...
 \begin{listing}[t]
 \centering
-\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt]
-\begin{minted}[fontsize=\scriptsize,linenos]{haskell}
+\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt,arc=0pt,
+                  boxrule=0pt,toprule=1pt,
+                  colback=white]
+\begin{minted}[fontsize=\footnotesize,linenos]{haskell}
 // Composite Fact Types
 Fact outcome Identified by target * vciv * vma * probability
 ...
@@ -432,6 +439,9 @@ The normative advisor agent script specialized for IHL rules implemented in eFLI
 
 \begin{listing}[!thb]
 \centering
+\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt,arc=0pt,
+                  boxrule=0pt,toprule=1pt,
+                  colback=white]
 \begin{minted}[fontsize=\footnotesize,linenos]{prolog}
 +?permitted(A): enabled(A) => #respond(true).
 +?permitted(A) => #respond(false).
@@ -448,12 +458,16 @@ The normative advisor agent script specialized for IHL rules implemented in eFLI
 -evma(D,V) => #untell("Device",evma(D,V)).
 
 \end{minted}
+\end{tcolorbox}
 \caption{ASC2 implementation of IHL eFLINT Powered advisors}
 \label{lst:advisor:ihl}
 \end{listing}
 
 \begin{listing}[!htb]
 \centering
+\begin{tcolorbox}[left=2pt,right=2pt,top=2pt,bottom=2pt,arc=0pt,
+                  boxrule=0pt,toprule=1pt,
+                  colback=white]
 \begin{minted}[fontsize=\footnotesize,linenos]{prolog}
 % Rules
 evciv(D,V) :-
@@ -502,6 +516,7 @@ dav(D) :- dt(D) && dp(D) && dmh(D).
 +!update_dav(D) : not dav(D) =>
     #coms.untell("IHLDevice",pass_ihl_rules(D)).
 \end{minted}
+\end{tcolorbox}
 \caption{ASC2 implementation of IHL in Prolog Powered Advisors}
 \label{lst:advisor:asc2:ihl}
 \end{listing}
