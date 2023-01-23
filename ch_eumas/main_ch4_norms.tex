@@ -1,6 +1,6 @@
 \chapter{Introducing Norms to Agents: Normative Advisors}
 \label{ch:normative_advisors}
-\textcolor{red}{ABSTRACT REWRITE and SOME TONE CHANGE IN THE BODY} This chapter introduces a modular architecture for integrating norms in autonomous agents and multi-agent systems. As the the interactions between norms and agents can be complex, this architecture utilizes multiple programmable components to model concepts such as adoption of multiple personal and/or collective possibly conflicting norms, interpretation and qualification between social and normative contexts, possibility of intentionally (non-)compliant behaviors and resolving conflicts between norms and desires (or other norms). The architecture revolves around \emph{normative advisors} that act as the bridge between intentional agents and the institutional reality. As a technical contribution, a running implementation of the architecture is presented based on the ASC2 (AgentScript) BDI framework and eFLINT norm reasoner. 
+This chapter explores the next step in modelling norm-governed systems by introducing a modular architecture for integrating norms in autonomous agents and multi-agent systems. As the the interactions between norms and agents can be complex, this architecture utilizes multiple programmable components to model concepts such as adoption of multiple personal and/or collective possibly conflicting norms, interpretation and qualification between social and normative contexts, possibility of intentionally (non-)compliant behaviors and resolving conflicts between norms and desires (or other norms). The architecture revolves around \emph{normative advisors} that act as the bridge between intentional agents and the institutional reality. As a technical contribution, a running implementation of the architecture is presented based on the ASC2 framework and eFLINT norm reasoner. 
 
 
 \section{Introduction}
@@ -402,7 +402,7 @@ To concretize the proposed approach, we will discuss at higher-level why it is f
 \centering
 \begin{minipage}[b]{.7\linewidth}
   \centering
-  \includegraphics[width=\textwidth]{ch_eumas/nbdi.png}
+  \includegraphics[width=\textwidth]{ch_eumas/nbdiarch.drawio.png}
   \captionof{figure}{Normative advisor's architecture}
   \label{fig:nbdi}
 \end{minipage}
@@ -425,7 +425,7 @@ Our implementation benefits from the modularity provided by ASC2, allowing easy 
 Figure~\ref{fig:nbdi} illustrates an overview of the architecture of a normative advisor.
 %While AgentSpeak-like languages have high-level abstractions for implementing intentional agents, they do not necessarily provide the proper abstractions for specification of norms, where this level of abstraction is indeed present in norm specification DSLs like eFLINT. On the other hand, while norm specifications generally do not imply concretely the social settings they are applicable in, still they only take meaning in such social settings and having an agent that is aware of the social setting alongside the norms gives much more usability to the norms.
 % The architecture in Figure \ref{fig:nbdi}
-It is inspired by the BDI architecture of Jason \cite{Bordini2005}.
+It is inspired by the BDI architecture of Jason \cite{Bordini2005} and resembles ASC2's default functional architecture in Figure~\ref{fig:asc2func}.
 %
 In effect, in this architecture a normative advisor can be seen as a BDI agent in which the (typically Prolog-like) belief-base is replaced the norm reasoner, thus, logical reasoning of the agent is replaced with normative reasoning. Apart from the differences between a logical reasoner (e.g. Prolog) and a norm reasoner (e.g. eFLINT), the main architectural differences of an advisor with a typical BDI agents are: (1) the belief-base (in this case, the norm-base) of the agent can generate more than just belief-update (or fact-update) events, it may now also raise duty events, act (enabled/disabled) events and violation events upon which the agent can react  according to its plan library; (2) from the execution context of a plan alongside fact-update actions (\asc{+fact} and \asc{-fact}), there can now be act-perform actions (\mintinline{text}{#perform(act)}). These differences arise from the the fact that unlike a logical reasoner like Prolog that typically uses backward-chaining to infer facts based on queries, the eFLINT framework also produces information in a forward-chaining manner, thus generating more events for the advisor to process.
 %
