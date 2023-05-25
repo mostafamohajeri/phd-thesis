@@ -7,7 +7,7 @@
 %%
 %%
 %%
-\documentclass{illcdiss}
+\documentclass[book]{illcdiss}
 
 %If you use Latex2.09 instead of Latex2e, comment the \documentclass line
 %and uncomment one of the following lines (depending on whether you
@@ -40,6 +40,7 @@
 \usepackage{fancyvrb}
 \usepackage{enumitem}
 \usepackage{booktabs}
+\usepackage{csquotes}
 \captionsetup{compatibility=false}
 \usepackage{subcaption}
 \usepackage{amssymb}% http://ctan.org/pkg/amssymb
@@ -84,7 +85,7 @@
 \include{ch_eumas/main_ch4_norms}
 \include{ch_cmf/main_ch_cmf}
 \include{ch_jurix/main_ch6_cases}
-\include{main_conclusion}
+\include{ch_conclusion/conclusion.tex}
 \appendix
 
 % \include{guide_appA}
@@ -97,11 +98,11 @@
 \include{guide_symbols}
 \include{guide_samenvatting}
 \include{guide_abstract}
-\include{guide_curriculum}
+% \include{guide_curriculum}
 
 %%  finally, \include the list of previous ILLC dissertations
 
-\cleardoublepage % if you are so inclined
-\include{illcdissertations}
+% \cleardoublepage % if you are so inclined
+% \include{illcdissertations}
 
 \end{document}
